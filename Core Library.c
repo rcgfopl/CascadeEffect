@@ -18,7 +18,7 @@ const int JOY_THRESHOLD = 8;
 // Ask the user a question with two options, selected via the left and right buttons
 //
 // This returns -1 if the left option is chosen, and 1 if the right option is chosen.
-int promptLeftRight(string prompt, string left, string right)
+int promptLeftRight(const string prompt, const string left, const string right)
 {
 	int choice = 0;
 	while (true) {
@@ -45,8 +45,30 @@ int promptLeftRight(string prompt, string left, string right)
 			return choice;
 		}
 	}
+}
 
-	return 0; // this never gets run, it just appeases the compiler
+// Ask the user to enter a whole, positive or zero number
+int promptNumber(const string prompt)
+{
+	int result = 0;
+	while (true) {
+		eraseDisplay();
+		nxtDisplayTextLine(1, prompt);
+
+		while (nNxtButtonPressed != -1) {}
+		while (nNxtButtonPressed == -1) {}
+		if (nNxtButtonPressed == kLeftButton) {
+			--result;
+		} else if (nNxtButtonPressed == kRightButton) {
+			++result;
+		} else if (nNxtButtonPressed == kEnterButton) {
+			return result;
+		}
+
+		if (result < 0) result = 0;
+
+		nxtDisplayTextLine(3, "%2d", result);
+	}
 }
 
 // Equivalent to waitForStart but provides the user an option to bypass by pressing the
@@ -59,6 +81,17 @@ void waitForStartOptional()
 	while (joystick.StopPgm && nNxtButtonPressed != kEnterButton) {
 		getJoystickSettings(joystick);
 	}
+}
+
+// Prompts the user for a delay, then proceeds to waitForStartOptional before performing the
+// chosen delay
+void waitForStartWithDelay()
+{
+	int delay = promptNumber("Delay (sec):");
+
+	waitForStartOptional();
+
+	wait10Msec(delay * 100);
 }
 
 //various methods to move forward.

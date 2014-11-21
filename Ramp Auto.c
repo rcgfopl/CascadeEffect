@@ -25,7 +25,7 @@
 
 task main()
 {
-	waitForStartOptional();
+	waitForStartWithDelay();
 
 	Forward(3000, 75);
 }
