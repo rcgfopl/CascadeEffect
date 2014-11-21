@@ -26,18 +26,18 @@ task main()
 
 	while (nNxtButtonPressed != kNoButton) {}
 	while (true) {
-		int dir = 0;
+		int lift = 0;
 		int spin = 0;
 		if (nNxtButtonPressed == kRightButton) { // note that kRightButton != kButtonRight x(
-			dir = 1;
+			lift = 100;
 		} else if (nNxtButtonPressed == kLeftButton) {
-			dir = -1;
+			lift = -50;
 		} else if (nNxtButtonPressed == kEnterButton) {
-			spin = -1;
+			spin = -75;
 		}
 
-		motor[mLiftL] = motor[mLiftR] = dir * 100;
-		motor[mIntake] = spin * 75;
+		motor[mLiftL] = motor[mLiftR] = lift;
+		motor[mIntake] = spin;
 
 		eraseDisplay();
 		nxtDisplayTextLine(2, "%d", nMotorEncoder[mLiftL]);
