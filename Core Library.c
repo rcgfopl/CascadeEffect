@@ -15,130 +15,51 @@ const float GOAL_ORBIT_RADIUS = 0;
 // When the joystick is within this value of zero, it will clamp to zero
 const int JOY_THRESHOLD = 8;
 
-//Miscellaneous methods
-
-/*
-// Allows us to pick our choice of autonomous program.
-// Uses a GUI and the NXT buttons.
-int picker()
+// Ask the user a question with two options, selected via the left and right buttons
+//
+// This returns -1 if the left option is chosen, and 1 if the right option is chosen.
+int promptLeftRight(string prompt, string left, string right)
 {
-	while(true)
-	{
-		wait1Msec(500);
-		int x = 1;
-		int y = 0;
-		if(y == 0)
-		{
-			while(nNxtButtonPressed != 3)
-			{
-				nxtDisplayCenteredTextLine(2,"Hello There! This is the Autonomous Chooser.");
-			 	nxtDisplayCenteredBigTextLine(4,"Please pick the beacon you would like to go to.");
-	   	}
-	   	while(nNxtButtonPressed == 3) {}
-	   	eraseDisplay();
-	   	wait1Msec(500);
-	   	y++;
-	 	}
-	  while (y > 0)
-	  {
-			nxtDisplayCenteredTextLine(2,"%d",x);
-			if(nNxtButtonPressed == 1)
-			{
-				wait1Msec(500);
-				if(x == max)
-					{x=1;}
-				else
-		 			{x++;}
-			}
-			else if(nNxtButtonPressed == 2)
-			{
-				wait1Msec(500);
-				if(x == 1)
-					{x=max;}
-				else
-		 			{x--;}
-			}
-			else if(nNxtButtonPressed == 3)
-			{
-				wait1Msec(500);
-		 		return x;
-			}
-			eraseDisplay();
+	int choice = 0;
+	while (true) {
+		nxtDisplayTextLine(1, prompt);
+
+		string choiceText = "";
+		if (choice == -1) {
+			choiceText = left;
+		} else if (choice == 1) {
+			choiceText = right;
+		}
+		nxtDisplayTextLine(2, choiceText);
+
+		nxtDisplayTextLine(4, "Enter to accept");
+
+		while (nNxtButtonPressed != -1) {}
+		while (nNxtButtonPressed == -1) {}
+
+		if (nNxtButtonPressed == kLeftButton) {
+			choice = -1;
+		} else if (nNxtButtonPressed == kRightButton) {
+			choice = 1;
+		} else if (nNxtButtonPressed == kEnterButton && choice != 0) {
+			return choice;
 		}
 	}
-	eraseDisplay();
-	nxtDisplayCenteredTextLine(2, "Oh my. Why did we get here? Something went wrong.");
-	wait1Msec(100);
-	return 1;
 
+	return 0; // this never gets run, it just appeases the compiler
 }
-*/
 
-/*
-// allows us to pick the time we wait before our autonomous program starts.
-void selectTime()
+// Equivalent to waitForStart but provides the user an option to bypass by pressing the
+// enter button
+//
+// This waits for no buttons to be pressed before starting the waiting.
+void waitForStartOptional()
 {
-	while(!timeSelected)
-	{
-		nxtDisplayCenteredTextLine(2, "Time: %2.1f", (waitTime));
-		if (nNxtButtonPressed == 1)
-		{
-			wait1Msec(500);
-			PlaySound(soundBlip);
-			waitTime += 2.5;
-		}
-		else if (nNxtButtonPressed == 2)
-		{
-			wait1Msec(500);
-			PlaySound(soundBlip);
-			waitTime -= 2.5;
-		}
-		if (waitTime > 15)
-		{
-			waitTime = 15;
-		}
-		else if (waitTime < 0)
-		{
-			waitTime = 0;
-		}
-		if(nNxtButtonPressed == 3)
-		{
-			wait1Msec(500);
-			timeSelected = true;
-		}
+	while (nNxtButtonPressed != -1) {}
+	while (joystick.StopPgm && nNxtButtonPressed != kEnterButton) {
+		getJoystickSettings(joystick);
 	}
 }
-*/
-
-/*
-// allows us to pick if we want WaitForStart method to run.
-void startSelect()
-{
-	while(!startSelected)
-	{
-		nxtDisplayCenteredTextLine(2, "WaitForStart? %s", wait);
-		if (nNxtButtonPressed == 1)
-		{
-			wait1Msec(500);
-			PlaySound(soundBlip);
-			wait = "Yes";
-			waitSelected = true;
-		}
-		else if (nNxtButtonPressed == 2)
-		{
-			wait1Msec(500);
-			PlaySound(soundBlip);
-			wait = "No";
-			waitSelected = false;
-		}
-		if(nNxtButtonPressed == 3)
-		{
-			wait1Msec(500);
-			startSelected = true;
-		}
-	}
-}
-*/
 
 //various methods to move forward.
 
@@ -483,6 +404,10 @@ void moveCircle(int maxPwr, int dist)
 	}
 }
 
+// If the given value is within JOY_THRESHOLD of zero, clamp the value to zero
+//
+// This should be wrapped around joystick values, as in:
+// motor[mLeft] = threshold(joystick.joy1_y1);
 int threshold(int value)
 {
 	if (abs(value) < JOY_THRESHOLD) {
