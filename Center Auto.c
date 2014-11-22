@@ -30,52 +30,70 @@ task main()
 	prepareSlide();
 
 	Forward(500, 20);
-	Forward(2000, 35);
+	Forward(3000, 35);
 
 	wait10Msec(50);
 	int sensorReading = SensorValue[IR];
 
-	if (sensorReading == 0) { // if goal is south or southeast
-		Turn(1250, 35, -1);
+	Backward(500, 20);
+	Backward(500, 35);
+
+	if (sensorReading != 5) { // if goal is south or southeast
+		wait10Msec(50);
+		// Turn 45 to get second reading
+		Turn(1250, 35, 1);
 
 		wait10Msec(50);
 		sensorReading = SensorValue[IR];
 
-		if (sensorReading == 0 || sensorReading == 9) { // if goal is south
+		if (sensorReading == 0 || sensorReading == 1) { // if goal is south
+			// Move at diagonal towards goal
 			Forward(500, 20);
-			Forward(3500, 35);
+			Forward(4500, 35);
 			
+			// Turn 45
 			wait10Msec(50);
-			Turn(1150, 50, 1);
+			Turn(1150, 50, -1);
 
+			// Move in line with goal
 			wait10Msec(50);
-			Forward(2000, 20);
+			Forward(1000, 20);
 
+			// Turn to face goal
 			wait10Msec(50);
-			Turn(2450, 50, 1);
+			Turn(1800, 50, -1);
 
+			// Lift and go up to goal
 			wait10Msec(50);
 			liftSlide(LIFT_MAX);
-			Forward(900, 20);
+			Forward(700, 20);
 		} else { // if goal is southeast
 			Forward(500, 20);
-			Forward(2300, 35);
+			Forward(2150, 35);
 
 			wait10Msec(50);
-			Turn(2250, 50, 1);
+			Turn(2450, 35, -1);
 
 			liftSlide(LIFT_MAX);
 
-			Forward(750, 20);
+			Forward(700, 20);
 		}
 	} else { // if goal is east
+		wait10Msec(50);
 		liftSlide(LIFT_MAX);
 
-		Forward(1600, 20);
+		Forward(1350, 20);
 	}
 
 	motor[mIntake] = -100;
 	wait10Msec(200);
+	motor[mIntake] = 0;
+
+	Backward(1600, 20);
 
 	liftSlide(LIFT_MIN);
+
+	Turn(2000, 35, 1);
+	Forward(500, 20);
+	ForwardWithTime(1500, 35);
 }

@@ -23,38 +23,41 @@
 task main()
 {
 	servo[sHook] = HOOK_UP;
+	nMotorEncoder[mLiftL] = 0;
 
 	waitForStartWithDelay();
 
-	nMotorEncoder[mLiftL] = 0;
-
 	Forward(500, 20);
 	Forward(500, 35);
-	Forward(2000, 10);
+	Forward(2000, 5);
 	wait10Msec(50);
 	prepareSlide();
 
 	// Drive off the ramp
-	Forward(3000, 35);
+	Forward(500, 20);
+	Forward(2500, 35);
 
 	// Drive to closest rolling goal
-	Forward(3000, 35);
+	Forward(2500, 35);
 
 	// Grab the goal
 	servo[sHook] = HOOK_DOWN;
 	wait10Msec(50);
 
-	Forward(1000, 35);
+	Forward(500, 20);
+	Forward(500, 35);
 
 	// Turn back toward the rolling goal target zone
 	Turn(1000, 35, -1);
 
+	// Backward to goal
 	Backward(500, 20);
 	Backward(8500, 35);
 
-	Turn(500, 35, -1);
+	// Turn in towards goal and back all the way in
+	Turn(200, 35, -1);
 	Backward(500, 20);
-	Backward(3500, 35);
+	BackwardWithTime(1500, 35);
 
 	// Release the goal
 	servo[sHook] = HOOK_UP;
