@@ -22,26 +22,14 @@
 
 task main()
 {
-	nMotorEncoder[mLiftL] = 0;
+	bDisplayDiagnostics = false;
 
-	while (nNxtButtonPressed != kNoButton) {}
 	while (true) {
-		int lift = 0;
-		if (nNxtButtonPressed == kRightButton) { // note that kRightButton != kButtonRight x(
-			lift = 100;
-		} else if (nNxtButtonPressed == kLeftButton) {
-			lift = -50;
-		} else if (nNxtButtonPressed == kEnterButton) {
-			lift = 10;
-		}
-
-		motor[mLiftL] = motor[mLiftR] = lift;
+		int sensor = SensorValue[IR];
 
 		eraseDisplay();
-		nxtDisplayTextLine(2, "%d", nMotorEncoder[mLiftL]);
+		nxtDisplayTextLine(3, "IR: %d", sensor);
 
-		wait10Msec(10);
+		wait10Msec(1);
 	}
-
-	motor[mLiftL] = motor[mLiftR] = 0;
 }

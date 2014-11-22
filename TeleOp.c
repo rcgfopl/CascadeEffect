@@ -1,8 +1,5 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTMotor,  HTServo)
-#pragma config(Sensor, S1,     ,               sensorI2CMuxController)
-#pragma config(Sensor, S2,     Ultra,          sensorSONAR)
-#pragma config(Sensor, S3,     Ultra2,         sensorSONAR)
-#pragma config(Sensor, S4,     IR,             sensorHiTechnicIRSeeker600)
+#pragma config(Sensor, S2,     IR,             sensorHiTechnicIRSeeker1200)
 #pragma config(Motor,  motorA,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
@@ -22,16 +19,6 @@
 
 #include "JoystickDriver.c"
 #include "Core Library.c"
-
-const int TRAPDOOR_CLOSED = 128;
-const int TRAPDOOR_OPEN = 25;
-
-const int LIFT_MIN = 0;
-const int LIFT_MAX = 7400;
-const int LIFT_SLOW = 2100;
-
-const int HOOK_DOWN = 255 / 4;
-const int HOOK_UP = 255;
 
 int intakeDir = 0;
 

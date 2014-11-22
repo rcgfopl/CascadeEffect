@@ -1,8 +1,5 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTMotor,  HTServo)
-#pragma config(Sensor, S1,     ,               sensorI2CMuxController)
-#pragma config(Sensor, S2,     Ultra,          sensorSONAR)
-#pragma config(Sensor, S3,     Ultra2,         sensorSONAR)
-#pragma config(Sensor, S4,     IR,             sensorHiTechnicIRSeeker600)
+#pragma config(Sensor, S2,     IR,             sensorHiTechnicIRSeeker1200)
 #pragma config(Motor,  motorA,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
@@ -25,7 +22,42 @@
 
 task main()
 {
+	servo[sHook] = HOOK_UP;
+
 	waitForStartWithDelay();
 
-	Forward(3000, 75);
+	nMotorEncoder[mLiftL] = 0;
+
+	Forward(500, 20);
+	Forward(500, 35);
+	Forward(2000, 10);
+	wait10Msec(50);
+	prepareSlide();
+
+	// Drive off the ramp
+	Forward(3000, 35);
+
+	// Drive to closest rolling goal
+	Forward(3000, 35);
+
+	// Grab the goal
+	servo[sHook] = HOOK_DOWN;
+	wait10Msec(50);
+
+	Forward(1000, 35);
+
+	// Turn back toward the rolling goal target zone
+	Turn(1000, 35, -1);
+
+	Backward(500, 20);
+	Backward(8500, 35);
+
+	Turn(500, 35, -1);
+	Backward(500, 20);
+	Backward(3500, 35);
+
+	// Release the goal
+	servo[sHook] = HOOK_UP;
+
+	wait10Msec(100);
 }

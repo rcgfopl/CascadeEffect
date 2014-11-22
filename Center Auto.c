@@ -22,26 +22,58 @@
 
 task main()
 {
+	servo[sHook] = HOOK_UP;
 	nMotorEncoder[mLiftL] = 0;
 
-	while (nNxtButtonPressed != kNoButton) {}
-	while (true) {
-		int lift = 0;
-		if (nNxtButtonPressed == kRightButton) { // note that kRightButton != kButtonRight x(
-			lift = 100;
-		} else if (nNxtButtonPressed == kLeftButton) {
-			lift = -50;
-		} else if (nNxtButtonPressed == kEnterButton) {
-			lift = 10;
+	waitForStartWithDelay();
+
+	prepareSlide();
+
+	Forward(500, 20);
+	Forward(2000, 35);
+
+	wait10Msec(50);
+	int sensorReading = SensorValue[IR];
+
+	if (sensorReading == 0) { // if goal is south or southeast
+		Turn(1250, 35, -1);
+
+		wait10Msec(50);
+		sensorReading = SensorValue[IR];
+
+		if (sensorReading == 0 || sensorReading == 9) { // if goal is south
+			Forward(500, 20);
+			Forward(3500, 35);
+			
+			wait10Msec(50);
+			Turn(1150, 50, 1);
+
+			wait10Msec(50);
+			Forward(2000, 20);
+
+			wait10Msec(50);
+			Turn(2450, 50, 1);
+
+			wait10Msec(50);
+			liftSlide(LIFT_MAX);
+			Forward(900, 20);
+		} else { // if goal is southeast
+			Forward(500, 20);
+			Forward(2300, 35);
+
+			wait10Msec(50);
+			Turn(2250, 50, 1);
+
+			liftSlide(LIFT_MAX);
+
+			Forward(750, 20);
 		}
+	} else { // if goal is east
+		liftSlide(LIFT_MAX);
 
-		motor[mLiftL] = motor[mLiftR] = lift;
-
-		eraseDisplay();
-		nxtDisplayTextLine(2, "%d", nMotorEncoder[mLiftL]);
-
-		wait10Msec(10);
+		Forward(1600, 20);
 	}
 
-	motor[mLiftL] = motor[mLiftR] = 0;
+	motor[mIntake] = -100;
+	wait10Msec(200);
 }

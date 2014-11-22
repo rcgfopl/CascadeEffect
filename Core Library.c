@@ -1,6 +1,19 @@
 #include "drivers/hitechnic-sensormux.h"
 #include "drivers/lego-ultrasound.h"
 
+const int TRAPDOOR_CLOSED = 128;
+const int TRAPDOOR_OPEN = 25;
+
+const int LIFT_MIN = 0;
+const int LIFT_MAX = 7400;
+const int LIFT_SLOW = 2100;
+
+const int LIFT_THRESHOLD = 100;
+const int LIFT_CUSHION = 3000;
+
+const int HOOK_DOWN = 255 / 4;
+const int HOOK_UP = 255;
+
 // Direction representing a mLeft (counter-clockwise) turn
 // This is used as a parameter for turning functions.
 #define Left 1
@@ -55,6 +68,10 @@ int promptNumber(const string prompt)
 		eraseDisplay();
 		nxtDisplayTextLine(1, prompt);
 
+		if (result < 0) result = 0;
+
+		nxtDisplayTextLine(3, "yolo%d", result);
+
 		while (nNxtButtonPressed != -1) {}
 		while (nNxtButtonPressed == -1) {}
 		if (nNxtButtonPressed == kLeftButton) {
@@ -64,10 +81,6 @@ int promptNumber(const string prompt)
 		} else if (nNxtButtonPressed == kEnterButton) {
 			return result;
 		}
-
-		if (result < 0) result = 0;
-
-		nxtDisplayTextLine(3, "%2d", result);
 	}
 }
 
@@ -87,7 +100,9 @@ void waitForStartOptional()
 // chosen delay
 void waitForStartWithDelay()
 {
+	bDisplayDiagnostics = false;
 	int delay = promptNumber("Delay (sec):");
+	bDisplayDiagnostics = true;
 
 	waitForStartOptional();
 
@@ -102,9 +117,8 @@ void waitForStartWithDelay()
 void Forward(int distance, int power)
 {
 	nMotorEncoder[mLeft] = 0;
-	nMotorEncoder[mRight] = 0;
 
-	while((nMotorEncoder[mRight]) < distance)
+	while((nMotorEncoder[mLeft]) < distance)
 	{
 		motor[mLeft] = power;
 		motor[mRight] = power;
@@ -113,6 +127,7 @@ void Forward(int distance, int power)
 	motor[mRight] = 0;
 }
 
+/*
 // Move forward based on encoders while avoiding collisions
 // If the ultrasonic sensors see another robot, this will stop the robot until the
 // other robot moves away.
@@ -121,9 +136,8 @@ void Forward(int distance, int power)
 void ForwardWithSonar(int distance, int power)
 {
 	nMotorEncoder[mLeft] = 0;
-	nMotorEncoder[mRight] = 0;
 
-	while((nMotorEncoder[mRight]) < distance)
+	while((nMotorEncoder[mLeft]) < distance)
   {
 		int value = SensorValue[Ultra];
 		if((value>=255 || value<0))
@@ -145,9 +159,8 @@ void ForwardWithSonar(int distance, int power)
 void ForwardWithTwoSonar(int distance, int power)
 {
 	nMotorEncoder[mLeft] = 0;
-	nMotorEncoder[mRight] = 0;
 
-	while((nMotorEncoder[mRight]) < distance)
+	while((nMotorEncoder[mLeft]) < distance)
   {
 		int value  = USreadDist(Ultra);
 		int value2 = USreadDist(Ultra2);
@@ -188,6 +201,7 @@ void ForwardWithTimeUS(int time, int power)
 	motor[mRight] = 0;
 	motor[mLeft] = 0;
 }
+*/
 
 // Move forward based on encoders
 // time: the number of milliseconds to move for
@@ -227,9 +241,8 @@ void ForwardWithModTime(int time, int power)
 void ModForward(int distance, int power)
 {
 	nMotorEncoder[mLeft] = 0;
-	nMotorEncoder[mRight] = 0;
 
-	while((nMotorEncoder[mRight]) < distance)
+	while((nMotorEncoder[mLeft]) < distance)
 	{
 		motor[mLeft] = power + 25;
 		motor[mRight] = power;
@@ -246,9 +259,8 @@ void ModForward(int distance, int power)
 void Backward(int distance, int power)
 {
 	nMotorEncoder[mLeft] = 0;
-	nMotorEncoder[mRight] = 0;
 
-	while((nMotorEncoder[mRight] )> -distance)
+	while(nMotorEncoder[mLeft] > -distance)
 	{
 		motor[mLeft] = -power;
 		motor[mRight] = -power;
@@ -257,6 +269,7 @@ void Backward(int distance, int power)
 	motor[mRight] = 0;
 }
 
+/*
 // Move backward based on encoders while avoiding collisions
 // If the ultrasonic sensors see another robot, this will stop the robot until the
 // other robot moves away.
@@ -265,9 +278,8 @@ void Backward(int distance, int power)
 void BackwardWithSonar(int distance, int power)
 {
 	nMotorEncoder[mLeft] = 0;
-	nMotorEncoder[mRight] = 0;
 
-	while((nMotorEncoder[mRight] )> -distance)
+	while((nMotorEncoder[mLeft] )> -distance)
 	{
 		int value = SensorValue[Ultra];
 		if(value>=255 || value<0)
@@ -289,9 +301,8 @@ void BackwardWithSonar(int distance, int power)
 void BackwardWithTwoSonar(int distance, int power)
 {
 	nMotorEncoder[mLeft] = 0;
-	nMotorEncoder[mRight] = 0;
 
-	while((nMotorEncoder[mRight]) < distance)
+	while((nMotorEncoder[mLeft]) < distance)
   {
 		int value  = USreadDist(Ultra);
 		int value2 = USreadDist(Ultra2);
@@ -332,6 +343,7 @@ void BackwardWithTimeUS(int time, int power)
 	motor[mRight] = 0;
 	motor[mLeft] = 0;
 }
+*/
 
 // Move backward based on encoders
 // time: the number of milliseconds to move for
@@ -371,9 +383,8 @@ void BackwardWithModTime(int time, int power)
 void ModBackward(int distance, int power)
 {
 	nMotorEncoder[mLeft] = 0;
-	nMotorEncoder[mRight] = 0;
 
-	while((nMotorEncoder[mRight] )> -distance)
+	while((nMotorEncoder[mLeft] )> -distance)
 	{
 		motor[mLeft] = -power-25;
 		motor[mRight] = -power;
@@ -387,21 +398,21 @@ void ModBackward(int distance, int power)
 // Turn based on encoders
 // distance: the number of degrees to elapse on the encoders
 // power: the power level the motors will be driven at
-// dir: 1 for mLeft, -1 for mRight
+// dir: 1 for left, -1 for right
 void Turn(int distance, int power, int dir)
 {
 	nMotorEncoder[mLeft] = 0;
-	nMotorEncoder[mRight] = 0;
 
-	while(abs(nMotorEncoder[mRight]) < distance)
+	while(abs(nMotorEncoder[mLeft]) < distance)
 	{
-		motor[mLeft] = power*dir;
-		motor[mRight] = -power*dir;
+		motor[mLeft] = -power*dir;
+		motor[mRight] = power*dir;
 	}
 	motor[mLeft] = 0;
 	motor[mRight] = 0;
 }
 
+/*
 // Turn based on encoders
 // Compensates for a weaker mRight side of the drive train.
 // distance: the number of degrees to elapse on the encoders
@@ -410,9 +421,8 @@ void Turn(int distance, int power, int dir)
 void ModTurn(int distance, int power, int dir)
 {
 	nMotorEncoder[mLeft] = 0;
-	nMotorEncoder[mRight] = 0;
 
-	while(abs(nMotorEncoder[mRight]) < distance)
+	while(abs(nMotorEncoder[mLeft]) < distance)
 	{
 		motor[mLeft] = power*dir + 20 * dir;
 		motor[mRight] = -power*dir;
@@ -420,6 +430,7 @@ void ModTurn(int distance, int power, int dir)
 	motor[mLeft] = 0;
 	motor[mRight] = 0;
 }
+*/
 
 //moves the robot in a circle around a certain point.
 //To move backwards, maxPwr should be a negative number.
@@ -434,6 +445,46 @@ void moveCircle(int maxPwr, int dist)
 	{
 		motor[mLeft]=(int)(maxPwr*ratio + 0.5);
 		motor[mRight]= maxPwr;
+	}
+}
+
+// Lift or lower the slide to the given encoder target
+//
+// This will automatically use smart power values depending on the direction and
+// height of the slide.
+//
+// The slide will be parked within LIFT_THRESHOLD of the given target.
+void liftSlide(int target)
+{
+	while (true) {
+		int distance = target - nMotorEncoder[mLiftL];
+		if (abs(distance) <= LIFT_THRESHOLD) break;
+
+		int power = 0;
+		if (distance > 0) {
+			power = 100;
+		} else if (distance < 0) {
+			if (nMotorEncoder[mLiftL] <= LIFT_SLOW) {
+				power = -60;
+			} else {
+				power = -100;
+			}
+		}
+
+		motor[mLiftL] = motor[mLiftR] = power;
+	}
+
+	motor[mLiftL] = motor[mLiftR] = 0;
+}
+
+// Lift the slide above zero so that it has a couple inches of room above the ground
+// while driving (this lifts to LIFT_CUSHION)
+//
+// This does nothing if the slide is already above LIFT_CUSHION.
+void prepareSlide()
+{
+	if (nMotorEncoder[mLiftL] < LIFT_CUSHION) {
+		liftSlide(LIFT_CUSHION);
 	}
 }
 
