@@ -465,9 +465,9 @@ void liftSlide(int target)
 			power = 100;
 		} else if (distance < 0) {
 			if (nMotorEncoder[mLiftL] <= LIFT_SLOW) {
-				power = -60;
+				power = -20;
 			} else {
-				power = -100;
+				power = -40;
 			}
 		}
 

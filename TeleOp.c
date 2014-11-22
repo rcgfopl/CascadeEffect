@@ -43,13 +43,9 @@ void lift()
 	if (joy2Btn(11)) { // press left joystick
 		nMotorEncoder[mLiftL] = 0;
 	} else {
+		// Go slower when going down
 		if (power < 0) {
-			power = power * 60 / 100;
-		}
-
-		bool slowZone = power < 0 && nMotorEncoder[mLiftL] <= LIFT_SLOW;
-		if (slowZone && power < -35) {
-			power = -35;
+			power = power * 40 / 100;
 		}
 
 		bool tooLow = power < 0 && nMotorEncoder[mLiftL] <= LIFT_MIN;
