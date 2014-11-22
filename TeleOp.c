@@ -24,8 +24,16 @@ int intakeDir = 0;
 
 void drive()
 {
-	motor[mLeft] = threshold(joystick.joy1_y1) * 100 / 128;
-	motor[mRight] = threshold(joystick.joy1_y2) * 100 / 128;
+	int left = threshold(joystick.joy1_y1) * 100 / 128;
+	int right = threshold(joystick.joy1_y2) * 100 / 128;
+
+	if (joy1Btn(5)) { // left top shoulder
+		left /= 2;
+		right /= 2;
+	}
+
+	motor[mLeft] = left;
+	motor[mRight] = right;
 }
 
 void lift()
@@ -35,9 +43,13 @@ void lift()
 	if (joy2Btn(11)) { // press left joystick
 		nMotorEncoder[mLiftL] = 0;
 	} else {
+		if (power < 0) {
+			power = power * 60 / 100;
+		}
+
 		bool slowZone = power < 0 && nMotorEncoder[mLiftL] <= LIFT_SLOW;
-		if (slowZone && power < -60) {
-			power = -60;
+		if (slowZone && power < -35) {
+			power = -35;
 		}
 
 		bool tooLow = power < 0 && nMotorEncoder[mLiftL] <= LIFT_MIN;
@@ -45,6 +57,10 @@ void lift()
 		if (tooLow || tooHigh) {
 			power = 0;
 		}
+	}
+
+	if (joy2Btn(5)) { // left top shoulder
+		power /= 3;
 	}
 
 	motor[mLiftL] = motor[mLiftR] = power;
@@ -78,9 +94,9 @@ void intake()
 
 void hook()
 {
-	if (joy1Btn(5)) { // left shoulder button
+	if (joy1Btn(8)) { // left bottom shoulder button
 		servo[sHook] = HOOK_DOWN;
-	} else if (joy1Btn(6)) {
+	} else if (joy1Btn(6)) { // left top shoulder
 		servo[sHook] = HOOK_UP;
 	}
 }
