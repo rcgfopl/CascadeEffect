@@ -76,4 +76,6 @@ task main()
 
 	motor[mIntake] = -100;
 	wait10Msec(200);
+
+	liftSlide(LIFT_MIN);
 }

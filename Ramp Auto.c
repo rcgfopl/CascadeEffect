@@ -59,5 +59,5 @@ task main()
 	// Release the goal
 	servo[sHook] = HOOK_UP;
 
-	wait10Msec(100);
+	liftSlide(LIFT_MIN);
 }
