@@ -8,7 +8,7 @@ const int LIFT_MIN = 0;
 const int LIFT_MAX = 7400;
 const int LIFT_SLOW = 2100;
 
-const int LIFT_THRESHOLD = 100;
+const int LIFT_THRESHOLD = 50;
 const int LIFT_CUSHION = 3000;
 
 const int HOOK_DOWN = 255 / 4;
@@ -465,9 +465,9 @@ void liftSlide(int target)
 			power = 100;
 		} else if (distance < 0) {
 			if (nMotorEncoder[mLiftL] <= LIFT_SLOW) {
-				power = -20;
+				power = -5;
 			} else {
-				power = -40;
+				power = -20;
 			}
 		}
 
