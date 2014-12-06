@@ -5,7 +5,7 @@ const int BACKBOARD_MAX = 240;
 const int BACKBOARD_MIN = 80;
 
 const int LIFT_MIN = 0;
-const int LIFT_MAX = 7400;
+const int LIFT_MAX = 7900;
 const int LIFT_SLOW = 2100;
 
 const int LIFT_THRESHOLD = 50;
