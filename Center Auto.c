@@ -59,7 +59,7 @@ task main()
 
 	wait10Msec(50);
 
-	const bool goalPointingForward = isIrInDir(irFront, 2, "irFirst.txt");
+	const bool goalPointingForward = isIrInDir(irFront, 2, "first");
 
 	Backward(500, 20);
 	Backward(500, 35);
@@ -70,7 +70,7 @@ task main()
 		Turn(1250, 35, 1);
 
 		wait10Msec(50);
-		const bool goalPointingDiagonal = isIrInDir(irFront, 3, "irTurn.txt");
+		const bool goalPointingDiagonal = isIrInDir(irFront, 3, "turn");
 
 		if (!goalPointingDiagonal) { // if goal is pointing horizontal
 			// Move at diagonal towards goal
