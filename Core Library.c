@@ -1,8 +1,8 @@
 #include "drivers/hitechnic-sensormux.h"
 #include "drivers/lego-ultrasound.h"
 
-const int TRAPDOOR_CLOSED = 128;
-const int TRAPDOOR_OPEN = 25;
+const int TRAPDOOR_CLOSED = 240;
+const int TRAPDOOR_OPEN = 80;
 
 const int LIFT_MIN = 0;
 const int LIFT_MAX = 7400;
@@ -11,8 +11,8 @@ const int LIFT_SLOW = 2100;
 const int LIFT_THRESHOLD = 50;
 const int LIFT_CUSHION = 3000;
 
-const int HOOK_DOWN = 255 / 4;
-const int HOOK_UP = 255;
+const int HOOK_DOWN = 0;
+const int HOOK_UP = 180;
 
 // Direction representing a mLeft (counter-clockwise) turn
 // This is used as a parameter for turning functions.
@@ -21,7 +21,7 @@ const int HOOK_UP = 255;
 // This is used as a parameter for turning functions.
 #define Right -1
 // The distance between the left and right wheels on the robot, in feet
-const float ROBOT_WIDTH = 0;
+const float ROBOT_WIDTH = 42;
 // The radius of the circle around the goal at which the robot should orbit, in feet
 const float GOAL_ORBIT_RADIUS = 0;
 
@@ -441,7 +441,8 @@ void moveCircle(int maxPwr, int dist)
 	float a = GOAL_ORBIT_RADIUS, b = a+ROBOT_WIDTH;
 	//finds the ratio that will help us determine the power level for each side
 	float ratio = a/b;
-	while(nMotorEncoder(Right) < dist)
+	nMotorEncoder(mRight) = nMotorEncoder(mLeft) = 0;
+	while(nMotorEncoder(mRight) < dist || nMotorEncoder(mLeft) < dist)
 	{
 		motor[mLeft]=(int)(maxPwr*ratio + 0.5);
 		motor[mRight]= maxPwr;
