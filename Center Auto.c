@@ -21,6 +21,7 @@
 #include "JoystickDriver.c"
 #include "HTIRS Driver.h"
 #include "Core Library.c"
+#include "Log Library.c"
 
 const int IR_THRESHOLD = 10;
 
@@ -29,23 +30,13 @@ const int IR_THRESHOLD = 10;
  *
  * Direction is 0 for farthest left, 4 for farthest right.
  *
- * This saves the readings in a file of the given name, overwriting the previous name.
- * This filename should end in ".txt" to appease the NXT.
- *
- * The log will be of the form:
- *
- * [SensorNumber] R0 R1 R2 R3 R4
- *
- * For example:
- *
- * [9] 000 111 222 333 444
+ * Adds a log to the open log file under the given label name.
  */
-bool isIrInDir(int irSensor, int receiverDir, const string filename)
+bool isIrInDir(int irSensor, int receiverDir, const string name)
 {
 	int readings[5];
 	HTIRS2readAllACStrength(irSensor, readings[0], readings[1], readings[2], readings[3], readings[4]);
-
-	recordIrLog(filename, irSensor, readings[0], readings[1], readings[2], readings[3], readings[4]);
+	addLog(name, readings[0], readings[1], readings[2], readings[3], readings[4]);
 
 	const int value = readings[receiverDir];
 	return value >= IR_THRESHOLD;
@@ -56,6 +47,8 @@ task main()
 	servo[sHook] = HOOK_UP;
 	servo[sBackboard] = BACKBOARD_MAX;
 	nMotorEncoder[mLiftL] = 0;
+
+	startLogs("CtrLog.txt", 2);
 
 	waitForStartWithDelay();
 
@@ -119,6 +112,7 @@ task main()
 	}
 
 	motor[mIntake] = -100;
+	finishLogs();
 	wait10Msec(200);
 	motor[mIntake] = 0;
 

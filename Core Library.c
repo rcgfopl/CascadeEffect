@@ -501,34 +501,3 @@ int threshold(int value)
 		return value;
 	}
 }
-
-/**
- * Save the given IR reading in a log file of the given name
- *
- * This saves the readings in a file of the given name, overwriting the previous name.
- * This filename should end in ".txt" to appease the NXT.
- *
- * The log will be of the form:
- *
- * [SensorNumber] R0 R1 R2 R3 R4
- *
- * For example:
- *
- * [9] 000 111 222 333 444
- */
-void recordIrLog(const string filename, int irSensor, int r0, int r1, int r2, int r3, int r4)
-{
-	TFileIOResult ioResult;
-	TFileHandle logfile;
-
-	Delete(filename, ioResult);
-
-	word size = 32;
-	OpenWrite(logfile, ioResult, filename, size);
-
-	string resultText;
-	sprintf(resultText, "[%d] %d %d %d %d %d\n", irSensor, r0, r1, r2, r3, r4);
-	WriteText(logfile, ioResult, resultText);
-
-	Close(logfile, ioResult);
-}

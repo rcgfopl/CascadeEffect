@@ -21,10 +21,17 @@
 #include "JoystickDriver.c"
 #include "HTIRS Driver.h"
 #include "Core Library.c"
+#include "Log Library.c"
 
 task main()
 {
 	bDisplayDiagnostics = false;
+
+	startLogs("yolo.txt", 3);
+	addLog("jimmy", 31, 29, 384, 49, 20);
+	addLog("geo", 31, 29, 384, 49, 20);
+	addLog("KAPA_", 31, 29, 384, 49, 20);
+	finishLogs();
 
 	while (true) {
 		int dir = HTIRS2readACDir(irRight);
@@ -42,8 +49,6 @@ task main()
 		nxtDisplayTextLine(5, "3: DC %2d AC %2d", dc3, ac3);
 		nxtDisplayTextLine(6, "4: DC %2d AC %2d", dc4, ac4);
 		nxtDisplayTextLine(7, "5: DC %2d AC %2d", dc5, ac5);
-
-		recordIrLog("irYolo.txt", irRight, ac1, ac2, ac3, ac4, ac5);
 
 		wait10Msec(1);
 	}
