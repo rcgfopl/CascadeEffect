@@ -23,22 +23,59 @@
 #include "Core Library.c"
 
 const int IR_THRESHOLD = 10;
+#define filename "ir readings.txt"
+
+TFileHandle irLogFile;
+
+/**
+ * Read the AC values of all receivers of the given IR sensor,
+ * storing them as indexes 0 through 4 inclusive of the given
+ * int array
+ *
+ * This saves the readings in the IR log file under the given
+ * reading name.
+ *
+ * name must be four characters or less.
+ */
+void readIr(int irSensor, int* readings, const string name)
+{
+	HTIRS2readAllACStrength(irSensor, &readings[0], &readings[1], &readings[2], &readings[3], &readings[4]);
+
+	TFileIOResult ioResult;
+	WriteText(irLogFile, ioResult, "[");
+	WriteText(irLogFile, ioResult, name);
+	WriteText(irLogFile, ioResult, "]");
+	for (int i = 0; i < 5; ++i) {
+		WriteText(irLogFile, ioResult, " ");
+		WriteLong(irLogFile, ioResult, readings[i]);
+	}
+	WriteText(irLogFile, ioResult, "\n");
+}
 
 /**
  * Returns true if the AC IR sensor receiver of the given direction is above IR_THRESHOLD
  *
  * Direction is 0 for farthest left, 4 for farthest right.
  */
-bool isIrInDir(int irSensor, int receiverDir)
+bool isIrInDir(int irSensor, int receiverDir, const string name)
 {
 	int readings[5];
-	HTIRS2readAllACStrength(irSensor, readings[0], readings[1], readings[2], readings[3], readings[4]);
+	readIr(irSensor, readings, name);
+	const int value = readings[receiverDir];
 
-	return readings[receiverDir] >= IR_THRESHOLD;
+	return value >= IR_THRESHOLD;
 }
+
+// Example of maximal-length recording:
+// [turn] 111 111 111 111 111
 
 task main()
 {
+	TFileIOResult ioResult;
+	Delete(filename, ioResult);
+	// 56 bytes for each recording, two recordings
+	OpenWrite(irLogFile, ioResult, filename, (word) (27 * 2));
+
 	servo[sHook] = HOOK_UP;
 	servo[sBackboard] = BACKBOARD_MAX;
 	nMotorEncoder[mLiftL] = 0;
@@ -52,7 +89,7 @@ task main()
 
 	wait10Msec(50);
 
-	const bool goalPointingForward = isIrInDir(irFront, 2);
+	const bool goalPointingForward = isIrInDir(irFront, 2, "1st");
 
 	Backward(500, 20);
 	Backward(500, 35);
@@ -63,7 +100,7 @@ task main()
 		Turn(1250, 35, 1);
 
 		wait10Msec(50);
-		const bool goalPointingDiagonal = isIrInDir(irFront, 3);
+		const bool goalPointingDiagonal = isIrInDir(irFront, 3, "turn");
 
 		if (!goalPointingDiagonal) { // if goal is pointing horizontal
 			// Move at diagonal towards goal
@@ -103,6 +140,7 @@ task main()
 
 		Forward(1600, 20);
 	}
+	Close(file, ioResult);
 
 	motor[mIntake] = -100;
 	wait10Msec(200);
