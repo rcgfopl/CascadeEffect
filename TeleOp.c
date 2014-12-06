@@ -10,7 +10,7 @@
 #pragma config(Motor,  mtr_S1_C3_1,     mRight,        tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C3_2,     mIntake,       tmotorTetrix, openLoop, reversed)
 #pragma config(Servo,  srvo_S1_C4_1,    sHook,                tServoStandard)
-#pragma config(Servo,  srvo_S1_C4_2,    sTrapdoor,            tServoStandard)
+#pragma config(Servo,  srvo_S1_C4_2,    sBackboard,           tServoStandard)
 #pragma config(Servo,  srvo_S1_C4_3,    servo3,               tServoNone)
 #pragma config(Servo,  srvo_S1_C4_4,    servo4,               tServoNone)
 #pragma config(Servo,  srvo_S1_C4_5,    servo5,               tServoNone)
@@ -21,6 +21,7 @@
 #include "Core Library.c"
 
 int intakeDir = 0;
+int backboardPosition = BACKBOARD_MAX; // start up
 
 void drive()
 {
@@ -62,13 +63,26 @@ void lift()
 	motor[mLiftL] = motor[mLiftR] = power;
 }
 
-void trapdoor()
+void backboard()
 {
+	backboardPosition += threshold(joystick.joy2_y2) * 20 / 128;
+
+	if (backboardPosition > BACKBOARD_MAX) {
+		backboardPosition = BACKBOARD_MAX;
+	} else if (backboardPosition < BACKBOARD_MIN) {
+		backboardPosition = BACKBOARD_MIN;
+	}
+
+	servo[sBackboard] = backboardPosition;
+
+
+	/*
 	if (joystick.joy2_TopHat == 2) { // right button
 		servo[sTrapdoor] = TRAPDOOR_OPEN;
 	} else if (joystick.joy2_TopHat == 6) { // left button
 		servo[sTrapdoor] = TRAPDOOR_CLOSED;
 	}
+	*/
 }
 
 void intake()
@@ -81,11 +95,7 @@ void intake()
 		intakeDir = 0;
 	}
 
-	if (intakeDir == 0) {
-		motor[mIntake] = threshold(joystick.joy2_y2) * 100 / 128;
-	} else {
-		motor[mIntake] = intakeDir * 100;
-	}
+	motor[mIntake] = intakeDir * 100;
 }
 
 void hook()
@@ -101,6 +111,7 @@ task main()
 {
 	nMotorEncoder[mLiftL] = 0;
 	servo[sHook] = HOOK_UP;
+	servo[sBackboard] = backboardPosition;
 
 	while(true) {
 		if (!bDisconnected) {
@@ -109,7 +120,7 @@ task main()
 			drive();
 			lift();
 			intake();
-			trapdoor();
+			backboard();
 			hook();
 		} else {
 			motor[mLeft] = motor[mRight] = motor[mLiftL] = motor[mLiftR] = motor[mIntake] = 0;

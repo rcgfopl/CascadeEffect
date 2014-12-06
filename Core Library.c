@@ -1,8 +1,8 @@
 #include "drivers/hitechnic-sensormux.h"
 #include "drivers/lego-ultrasound.h"
 
-const int TRAPDOOR_CLOSED = 240;
-const int TRAPDOOR_OPEN = 80;
+const int BACKBOARD_MAX = 240;
+const int BACKBOARD_MIN = 80;
 
 const int LIFT_MIN = 0;
 const int LIFT_MAX = 7400;
