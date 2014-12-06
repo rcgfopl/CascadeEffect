@@ -73,36 +73,39 @@ task main()
 		const bool goalPointingDiagonal = isIrInDir(irFront, 3, "turn");
 
 		if (!goalPointingDiagonal) { // if goal is pointing horizontal
+			Turn(300, 35, -1);
+			wait10Msec(50);
+
 			// Move at diagonal towards goal
 			Forward(500, 20);
-			Forward(4500, 35);
+			Forward(4000, 35);
 
 			// Turn 45
 			wait10Msec(50);
-			Turn(1150, 50, -1);
+			Turn(1000, 50, -1);
 
 			// Move in line with goal
 			wait10Msec(50);
-			Forward(1000, 20);
+			Forward(1500, 20);
 
 			// Turn to face goal
 			wait10Msec(50);
-			Turn(2000, 50, -1);
+			Turn(1500, 50, -1);
 
 			// Lift and go up to goal
 			wait10Msec(50);
 			liftSlide(LIFT_MAX);
-			Forward(700, 20);
+			Forward(1600, 20);
 		} else { // if goal is pointing diagonal
 			Forward(500, 20);
-			Forward(2150, 35);
+			Forward(2400, 35);
 
 			wait10Msec(50);
-			Turn(2450, 35, -1);
+			Turn(2100, 35, -1);
 
 			liftSlide(LIFT_MAX);
 
-			Forward(700, 20);
+			Forward(2200, 20);
 		}
 	} else { // if goal is pointing forward
 		wait10Msec(50);
