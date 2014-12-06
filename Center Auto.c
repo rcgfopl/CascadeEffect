@@ -45,25 +45,7 @@ bool isIrInDir(int irSensor, int receiverDir, const string filename)
 	int readings[5];
 	HTIRS2readAllACStrength(irSensor, readings[0], readings[1], readings[2], readings[3], readings[4]);
 
-	TFileIOResult ioResult;
-	TFileHandle logfile;
-
-	Delete(filename, ioResult);
-
-	word size = 24;
-	OpenWrite(logfile, ioResult, filename, size);
-
-	WriteText(logfile, ioResult, "[");
-	WriteLong(logfile, ioResult, irSensor);
-	WriteText(logfile, ioResult, "]");
-
-	for (int i = 0; i < 5; ++i) {
-		WriteText(logfile, ioResult, " ");
-		WriteLong(logfile, ioResult, readings[i]);
-	}
-	WriteText(logfile, ioResult, "\n");
-
-	Close(logfile, ioResult);
+	recordIrLog(filename, irSensor, readings[0], readings[1], readings[2], readings[3], readings[4]);
 
 	const int value = readings[receiverDir];
 	return value >= IR_THRESHOLD;

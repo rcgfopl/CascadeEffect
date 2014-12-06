@@ -43,6 +43,8 @@ task main()
 		nxtDisplayTextLine(6, "4: DC %2d AC %2d", dc4, ac4);
 		nxtDisplayTextLine(7, "5: DC %2d AC %2d", dc5, ac5);
 
+		recordIrLog("irYolo.txt", irRight, ac1, ac2, ac3, ac4, ac5);
+
 		wait10Msec(1);
 	}
 }
