@@ -1,18 +1,18 @@
 #include "drivers/hitechnic-sensormux.h"
 #include "drivers/lego-ultrasound.h"
 
-const int BACKBOARD_MAX = 240;
+const int BACKBOARD_MAX = 280;
 const int BACKBOARD_MIN = 80;
 
 const int LIFT_MIN = 0;
-const int LIFT_MAX = 7900;
+const int LIFT_MAX = 7700;
 const int LIFT_SLOW = 2100;
 
 const int LIFT_THRESHOLD = 50;
 const int LIFT_CUSHION = 3000;
 
 const int HOOK_DOWN = 0;
-const int HOOK_UP = 180;
+const int HOOK_UP = 230;
 
 // Direction representing a mLeft (counter-clockwise) turn
 // This is used as a parameter for turning functions.
