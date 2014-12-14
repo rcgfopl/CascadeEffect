@@ -42,13 +42,36 @@ bool isIrInDir(int irSensor, int receiverDir, const string name)
 	return value >= IR_THRESHOLD;
 }
 
+/**
+ * Returns true if any AC IR sensor receiver of the given direction or to the right is above IR_THRESHOLD
+ *
+ * Direction is 0 for farthest left, 4 for farthest right.
+ *
+ * Adds a log to the open log file under the given label name.
+ */
+bool isIrRightOfDir(int irSensor, int receiverDir, const string name)
+{
+	int readings[5];
+	HTIRS2readAllACStrength(irSensor, readings[0], readings[1], readings[2], readings[3], readings[4]);
+	addLog(name, readings[0], readings[1], readings[2], readings[3], readings[4]);
+
+	for (int i = receiverDir; i < 5; ++i) {
+		const int value = readings[i];
+		if (value >= IR_THRESHOLD) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 task main()
 {
 	servo[sHook] = HOOK_UP;
 	servo[sBackboard] = BACKBOARD_MAX;
 	nMotorEncoder[mLiftL] = 0;
 
-	startLogs("CtrLog.txt", 2);
+	startLogs("CtrLog.txt", 3);
 
 	waitForStartWithDelay();
 
@@ -59,7 +82,7 @@ task main()
 
 	wait10Msec(50);
 
-	const bool goalPointingForward = isIrInDir(irFront, 2, "first");
+	const bool goalPointingForward = isIrRightOfDir(irFront, 2, "first");
 
 	Backward(500, 20);
 	Backward(500, 35);
@@ -70,7 +93,9 @@ task main()
 		Turn(1250, 35, 1);
 
 		wait10Msec(50);
-		const bool goalPointingDiagonal = isIrInDir(irFront, 3, "turn");
+		const bool seeFront = isIrRightOfDir(irFront, 3, "turnF");
+		const bool seeRight = isIrRightOfDir(irRight, 0, "turnR");
+		const bool goalPointingDiagonal = seeFront && seeRight;
 
 		if (!goalPointingDiagonal) { // if goal is pointing horizontal
 			Turn(300, 35, -1);
