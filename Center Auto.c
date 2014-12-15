@@ -144,7 +144,13 @@ task main()
 	wait10Msec(200);
 	motor[mIntake] = 0;
 
+	servo[sHook] = HOOK_DOWN;
+
 	Backward(1600, 20);
 
 	liftSlide(LIFT_MIN);
+
+	servo[sHook] = HOOK_UP;
+
+	while (true) {}
 }
