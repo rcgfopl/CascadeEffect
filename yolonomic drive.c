@@ -29,7 +29,10 @@ void yolodrive(int left, int right, int strafe, int rotation)
 	if (abs(pFR) > biggest) biggest = abs(pFR);
 	if (abs(pBR) > biggest) biggest = abs(pBR);
 
-	float scale = 100.0 / biggest;
+	float scale = 1;
+	if (biggest > 100) {
+		scale = 100.0 / biggest;
+	}
 
 	motor[mFrontLeft] = (int) (scale * pFL);
 	motor[mBackLeft] = (int) (scale * pBL);
