@@ -2,17 +2,17 @@
 #pragma config(Hubs,  S2, HTMotor,  none,     none,     none)
 #pragma config(Sensor, S1,     ,               sensorI2CMuxController)
 #pragma config(Sensor, S2,     ,               sensorI2CMuxController)
-#pragma config(Motor,  mtr_S1_C1_1,     mFrontLeft,    tmotorTetrix, openLoop, encoder)
-#pragma config(Motor,  mtr_S1_C1_2,     mBackLeft,     tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C1_1,     mFrontLeft,    tmotorTetrix, openLoop, reversed, encoder)
+#pragma config(Motor,  mtr_S1_C1_2,     mBackLeft,     tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C3_1,     mIntake,       tmotorTetrix, openLoop, encoder)
 #pragma config(Motor,  mtr_S1_C3_2,     mLiftR,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C4_1,     mFrontRight,   tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C4_2,     mBackRight,    tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S2_C1_1,     motorJ,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C4_1,     mBackRight,    tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C4_2,     mFrontRight,   tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S2_C1_1,     mKnocker,      tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S2_C1_2,     mLiftL,        tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S1_C2_1,    sFloodGate,           tServoContinuousRotation)
-#pragma config(Servo,  srvo_S1_C2_2,    servo2,               tServoNone)
-#pragma config(Servo,  srvo_S1_C2_3,    servo3,               tServoNone)
+#pragma config(Servo,  srvo_S1_C2_2,    sIR,                  tServoStandard)
+#pragma config(Servo,  srvo_S1_C2_3,    sTongue,              tServoStandard)
 #pragma config(Servo,  srvo_S1_C2_4,    servo4,               tServoNone)
 #pragma config(Servo,  srvo_S1_C2_5,    servo5,               tServoNone)
 #pragma config(Servo,  srvo_S1_C2_6,    servo6,               tServoNone)
@@ -30,10 +30,10 @@
 */
 void yolodrive(int left, int right, int strafe, int rotation)
 {
-	int pFL = left + strafe + rotation;
-	int pBL = left - strafe + rotation;
-	int pFR = right - strafe - rotation;
-	int pBR = right + strafe - rotation;
+	int pFL = left - strafe + rotation;
+	int pBL = left + strafe + rotation;
+	int pFR = right + strafe - rotation;
+	int pBR = right - strafe - rotation;
 
 	float biggest = abs(pFL);
 	if (abs(pBL) > biggest) biggest = abs(pBL);
