@@ -33,20 +33,28 @@ void drive()
 	  frontIsBack = false;
 	}
 
-  int forwardBackward = threshold(joystick.joy1_y1);
+  int left = threshold(joystick.joy1_y1);
+  int right = threshold(joystick.joy1_y2);
   int strafe = threshold(joystick.joy1_x1);
   int rotation = threshold(joystick.joy1_x2);
 
+  if (abs(strafe) >= 99) {
+	  left = right = 0;
+  } else {
+	  strafe = 0;
+  }
+
   if (joy1Btn(6)) { // left top shoulder
-    forwardBackward /= 2;
+    left /= 2;
+    right /= 2;
     strafe /= 2;
     rotation /= 2;
   }
 
   if (!frontIsBack) {
-    yolodrive(forwardBackward, forwardBackward, strafe, rotation);
+    yolodrive(left, right, strafe, rotation);
   } else {
-    yolodrive(-forwardBackward, -forwardBackward, -strafe, rotation);
+    yolodrive(-right, -left, -strafe, rotation);
   }
 }
 
