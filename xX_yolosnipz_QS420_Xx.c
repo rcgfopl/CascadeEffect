@@ -5,11 +5,11 @@
 #pragma config(Motor,  mtr_S1_C1_1,     mFrontLeft,    tmotorTetrix, openLoop, reversed, encoder)
 #pragma config(Motor,  mtr_S1_C1_2,     mBackLeft,     tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C3_1,     mIntake,       tmotorTetrix, openLoop, encoder)
-#pragma config(Motor,  mtr_S1_C3_2,     mLiftR,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C3_2,     mLiftR,        tmotorTetrix, openLoop, encoder)
 #pragma config(Motor,  mtr_S1_C4_1,     mBackRight,    tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C4_2,     mFrontRight,   tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S2_C1_1,     mKnocker,      tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S2_C1_2,     mLiftL,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S2_C1_2,     mLiftL,        tmotorTetrix, openLoop, reversed)
 #pragma config(Servo,  srvo_S1_C2_1,    sFloodGate,           tServoContinuousRotation)
 #pragma config(Servo,  srvo_S1_C2_2,    sIR,                  tServoStandard)
 #pragma config(Servo,  srvo_S1_C2_3,    sTongue,              tServoStandard)
@@ -20,6 +20,8 @@
 
 #include "JoystickDriver.c"
 
+const int LIFT_MIN = 0;
+const int LIFT_MAX = 7700;
 
 /**
 * Set motor powers for yolonomic drive
@@ -51,30 +53,6 @@ void yolodrive(int left, int right, int strafe, int rotation)
 	motor[mBackRight] = (int) (scale * pBR);
 }
 
-void tankdrive(){
-	motor[mFrontLeft] = joystick.joy1_y1;
-	motor[mBackLeft] = joystick.joy1_y1;
-	motor[mFrontRight] = joystick.joy1_y2;
-	motor[mBackRight] = joystick.joy1_y2;
-}
-
-
-void test(){
-	if(joy1Btn(1)){
-		motor[mFrontLeft] = -100;
-		motor[mBackLeft] = 100;
-		motor[mFrontRight] = 100;
-		motor[mBackRight] = -100;
-	}
-	else{
-
-		motor[mFrontLeft] = 0;
-		motor[mBackLeft] = 0;
-		motor[mFrontRight] = 0;
-		motor[mBackRight] = 0;
-	}
-}
-
 /**
 * Reset motor powers back to zero
 */
@@ -85,7 +63,7 @@ void resetDrive()
 
 int threshold(int raw)
 {
-	if (abs(raw) < 25) {
+	if (abs(raw) < 60) {
 		return 0;
 		} else {
 		return raw * 100 / 128;
@@ -105,28 +83,73 @@ void gate(){
 
 }
 
+void tongue(){
+	if (joy2Btn(2)) {
+		servo[sTongue] = 95;
+	} else {
+		servo[sTongue] = 200;
+	}
+}
+
 void intake(){
-	if(joy1Btn(11)){
+	if(joy2Btn(4)){
 		motor[mIntake] = 100;
 	}
-	else if(joy1Btn(12)){
+	else if(joy2Btn(1)){
 		motor[mIntake] = 0;
 	}
+}
+
+void knocker(){
+	if (joystick.joy1_TopHat == 2) {
+		motor[mKnocker] = 25;
+	} else if (joystick.joy1_TopHat == 6) {
+		motor[mKnocker] = -25;
+	} else {
+		motor[mKnocker] = 0;
+	}
+}
+
+void lift()
+{
+	int power = threshold(joystick.joy2_y1);
+
+	if (joy2Btn(11)) { // press left joystick
+		nMotorEncoder[mLiftR] = 0;
+	} else {
+		// Go slower when going down
+		if (power < 0) {
+			power = power * 40 / 100;
+		}
+
+		bool tooLow = power < 0 && nMotorEncoder[mLiftR] <= LIFT_MIN;
+		bool tooHigh = power > 0 && nMotorEncoder[mLiftR] >= LIFT_MAX;
+		if (tooLow || tooHigh) {
+			power = 0;
+		}
+	}
+
+	if (joy2Btn(5)) { // left top shoulder
+		power /= 3;
+	}
+
+	motor[mLiftL] = motor[mLiftR] = power;
 }
 
 task main(){
 	while (true){
 		getJoystickSettings(joystick);
 
-						yolodrive(
-		threshold(joystick.joy1_y1),
-		threshold(joystick.joy1_y2),
-		threshold(joystick.joy1_x1),
-		threshold(joystick.joy1_x2)
-		);
-	//	tankdrive();
-	  //test();
+		yolodrive(
+			threshold(joystick.joy1_y1),
+			threshold(joystick.joy1_y2),
+			threshold(joystick.joy1_x1),
+			threshold(joystick.joy1_x2));
+
+		lift();
+		tongue();
 		intake();
 		gate();
+		knocker();
 	}
 }
