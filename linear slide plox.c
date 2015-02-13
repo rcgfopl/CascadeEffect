@@ -5,14 +5,14 @@
 #pragma config(Motor,  mtr_S1_C1_1,     mFrontLeft,    tmotorTetrix, openLoop, reversed, encoder)
 #pragma config(Motor,  mtr_S1_C1_2,     mBackLeft,     tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C3_1,     mIntake,       tmotorTetrix, openLoop, encoder)
-#pragma config(Motor,  mtr_S1_C3_2,     mLiftR,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C3_2,     mLiftR,        tmotorTetrix, openLoop, encoder)
 #pragma config(Motor,  mtr_S1_C4_1,     mBackRight,    tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C4_2,     mFrontRight,   tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S2_C1_1,     motorJ,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S2_C1_2,     mLiftL,        tmotorTetrix, openLoop, reversed, encoder)
+#pragma config(Motor,  mtr_S2_C1_1,     mKnocker,      tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S2_C1_2,     mLiftL,        tmotorTetrix, openLoop, reversed)
 #pragma config(Servo,  srvo_S1_C2_1,    sFloodGate,           tServoContinuousRotation)
-#pragma config(Servo,  srvo_S1_C2_2,    servo2,               tServoNone)
-#pragma config(Servo,  srvo_S1_C2_3,    servo3,               tServoNone)
+#pragma config(Servo,  srvo_S1_C2_2,    sIR,                  tServoStandard)
+#pragma config(Servo,  srvo_S1_C2_3,    sTongue,              tServoStandard)
 #pragma config(Servo,  srvo_S1_C2_4,    servo4,               tServoNone)
 #pragma config(Servo,  srvo_S1_C2_5,    servo5,               tServoNone)
 #pragma config(Servo,  srvo_S1_C2_6,    servo6,               tServoNone)
@@ -20,7 +20,7 @@
 
 task main()
 {
-	nMotorEncoder[mLiftL] = 0;
+	nMotorEncoder[mLiftR] = 0;
 
 	while (nNxtButtonPressed != kNoButton) {}
 	while (true) {
@@ -36,7 +36,7 @@ task main()
 		motor[mLiftL] = motor[mLiftR] = lift;
 
 		eraseDisplay();
-		nxtDisplayTextLine(2, "%d", nMotorEncoder[mLiftL]);
+		nxtDisplayTextLine(2, "%d", nMotorEncoder[mLiftR]);
 
 		wait10Msec(10);
 	}

@@ -29,92 +29,103 @@ void drive()
 {
 	if (joy1Btn(11)) { // left joystick clicker
 		frontIsBack = true;
-	} else if (joy1Btn(12)) { // right joystick clicker
-	  frontIsBack = false;
+		} else if (joy1Btn(12)) { // right joystick clicker
+		frontIsBack = false;
 	}
 
-  int left = threshold(joystick.joy1_y1);
-  int right = threshold(joystick.joy1_y2);
-  int strafe = threshold(joystick.joy1_x1);
-  int rotation = threshold(joystick.joy1_x2);
+	int left = threshold(joystick.joy1_y1);
+	int right = threshold(joystick.joy1_y2);
+	int strafe = threshold(joystick.joy1_x1);
+	int rotation = threshold(joystick.joy1_x2);
 
-  if (abs(strafe) >= 99) {
-	  left = right = 0;
-  } else {
-	  strafe = 0;
-  }
+	if (abs(strafe) >= 99) {
+		left = right = 0;
+		} else {
+		strafe = 0;
+	}
 
-  if (joy1Btn(6)) { // left top shoulder
-    left /= 2;
-    right /= 2;
-    strafe /= 2;
-    rotation /= 2;
-  }
+	if (joy1Btn(6)) { // left top shoulder
+		left /= 2;
+		right /= 2;
+		strafe /= 2;
+		rotation /= 2;
+	}
 
-  if (!frontIsBack) {
-    yolodrive(left, right, strafe, rotation);
-  } else {
-    yolodrive(-right, -left, -strafe, rotation);
-  }
+	if (!frontIsBack) {
+		yolodrive(left, right, strafe, rotation);
+		} else {
+		yolodrive(-right, -left, -strafe, rotation);
+	}
 }
 
 void lift()
 {
-  int power = threshold(joystick.joy2_y1);
+	int power = threshold(joystick.joy2_y1);
 
-  if (joy2Btn(11)) { // press left joystick
-    nMotorEncoder[mLiftR] = 0;
-  } else {
-    // Go slower when going down
-    if (power < 0) {
-      power = power * 40 / 100;
-    }
+	if (joy2Btn(11)) { // press left joystick
+		nMotorEncoder[mLiftR] = 0;
+		} else {
+		// Go slower when going down
+		if (power < 0) {
+			power = power * 40 / 100;
+		}
 
-    bool tooLow = power < 0 && nMotorEncoder[mLiftR] <= LIFT_MIN;
-    bool tooHigh = power > 0 && nMotorEncoder[mLiftR] >= LIFT_MAX;
-    if (tooLow || tooHigh) {
-      power = 0;
-    }
-  }
+		bool tooLow = power < 0 && nMotorEncoder[mLiftR] <= LIFT_MIN;
+		bool tooHigh = power > 0 && nMotorEncoder[mLiftR] >= LIFT_MAX;
+		if (tooLow || tooHigh) {
+			power = 0;
+		}
+	}
 
-  if (joy2Btn(5)) { // left top shoulder
-    power /= 3;
-  }
+	if (joy2Btn(5)) { // left top shoulder
+		power /= 3;
+	}
 
-  motor[mLiftL] = motor[mLiftR] = power;
+	motor[mLiftL] = motor[mLiftR] = power;
+}
+
+void tallGoal(){
+	if(joy2Btn(6)){
+		while(nMotorEncoder[mLiftR] < LIFT_TALL_GOAL){
+			motor[mLiftL] = 100;
+			motor[mLiftR] = 100;
+		}
+		motor[mLiftL] = 0;
+		motor[mLiftR] = 0;
+	}
 }
 
 void intake()
 {
-  if (joy2Btn(4)) {
-    intakeDir = 1;
-  } else if (joy2Btn(3)) {
-    intakeDir = -1;
-  } else if (joy2Btn(1)) {
-    intakeDir = 0;
-  }
+	if (joy2Btn(4)) {
+		intakeDir = 1;
+		} else if (joy2Btn(3)) {
+		intakeDir = -1;
+		} else if (joy2Btn(1)) {
+		intakeDir = 0;
+	}
 
-  motor[mIntake] = intakeDir * 100;
+	motor[mIntake] = intakeDir * 100;
 }
 
 void tongue()
 {
-  if (joy2Btn(2)) {
-    lowerTongue();
-  } else {
-    raiseTongue();
-  }
+	if (joy2Btn(2)) {
+		lowerTongue();
+		} else {
+		raiseTongue();
+	}
 }
 
 void knocker()
 {
-  if (joystick.joy1_TopHat == 2) {
-    motor[mKnocker] = 25;
-  } else if (joystick.joy1_TopHat == 6) {
-    motor[mKnocker] = -25;
-  } else {
-    motor[mKnocker] = 0;
-  }
+	if (joystick.joy1_TopHat == 2) {
+		motor[mKnocker] = 25;
+		} else if (joystick.joy1_TopHat == 6) {
+		motor[mKnocker] = -25;
+		} else {
+		motor[mKnocker] = 0;
+	}
 }
 
 void floodgate()
@@ -132,23 +143,24 @@ void floodgate()
 
 task main()
 {
-  nMotorEncoder[mLiftL] = 0;
+	nMotorEncoder[mLiftR] = 0;
 
-  while(true) {
-    if (!bDisconnected) {
-      getJoystickSettings(joystick);
+	while(true) {
+		if (!bDisconnected) {
+			getJoystickSettings(joystick);
 
-      drive();
-      lift();
-      intake();
-      knocker();
-      floodgate();
-      tongue();
-    } else {
-      motor[mFrontLeft] = motor[mBackLeft] = motor[mFrontRight] = motor[mBackRight] = motor[mLiftL] =
-        motor[mLiftR] = motor[mIntake] = motor[mKnocker] = 0;
-    }
+			drive();
+			lift();
+			intake();
+			tallGoal();
+			knocker();
+			floodgate();
+			tongue();
+			} else {
+			motor[mFrontLeft] = motor[mBackLeft] = motor[mFrontRight] = motor[mBackRight] = motor[mLiftL] =
+			motor[mLiftR] = motor[mIntake] = motor[mKnocker] = 0;
+		}
 
-    wait1Msec(100);
-  }
+		wait1Msec(100);
+	}
 }
