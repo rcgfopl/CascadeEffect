@@ -31,6 +31,22 @@ const int GRABBER_UNBLOCK_IR = 80;
 // When the joystick is within this value of zero, it will clamp to zero
 const int JOY_THRESHOLD = 60;
 
+/**
+ * Constants for autonomous movement
+ */
+
+#define DIR_FORWARD 1
+#define DIR_BACKWARD -1
+
+// The rate at which the robot should power up, in the form %power over milliseconds
+const float POWER_RATE = 100.0 / 2000;
+
+// The encoder distance from the end of a movement at which the robot should enter the slow zone
+const int DIST_FOR_SLOW = 600;
+
+// The maximum power at which the motors should move when the robot is in the slow zone
+const int SLOW_POWER = 20;
+
 /*
  * Input
  */
@@ -178,19 +194,50 @@ void yolodrive(int left, int right, int strafe, int rotation)
 }
 
 /**
+ * Get the average value of both drive encoders
+ *
+ * This uses absolute values, so it can be used for movements
+ * even when the two motors are moving in opposite directions.
+ */
+int driveEncoderAverage()
+{
+	return (abs(nMotorEncoder[mFrontLeft]) + abs(nMotorEncoder[mFrontRight])) / 2;
+}
+
+/**
  * Move straight using yolodrive for the given encoder distance
  *
- * Pass a negative power to go backwards.
+ * Power must be positive.
+ * Direction must be either DIR_FORWARD or DIR_BACKWARD.
  */
-void straight(int power, int distance)
+void straight(int direction, int power, int distance)
 {
 	nMotorEncoder[mFrontLeft] = 0;
 	nMotorEncoder[mFrontRight] = 0;
 
-	yolodrive(power, power, 0, 0);
+	long startTime = nPgmTime;
+	int timeToFull = (int) (power / POWER_RATE);
 
-	while (abs(nMotorEncoder[mFrontLeft] + nMotorEncoder[mFrontRight]) / 2 < distance) {
-		wait1Msec(1);
+	while (true) {
+		int elapsedTime = nPgmTime - startTime;
+		int remainingDist = distance - driveEncoderAverage();
+
+		if (remainingDist <= 0) break;
+
+		int currentPower;
+		if (elapsedTime < timeToFull) {
+			currentPower = (int) (elapsedTime * POWER_RATE);
+		} else {
+			currentPower = power;
+		}
+		if (remainingDist <= DIST_FOR_SLOW && currentPower > SLOW_POWER) {
+			currentPower = SLOW_POWER;
+		}
+
+		currentPower *= direction;
+		yolodrive(currentPower, currentPower, 0, 0);
+
+		wait10Msec(1);
 	}
 
 	yolodrive(0, 0, 0, 0);

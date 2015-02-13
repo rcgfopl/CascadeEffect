@@ -35,8 +35,7 @@ task main()
 	waitForStartWithDelay();
 
 	// Drive away from starting position along wall
-	straight(45, 1000);
-	straight(25, 400);
+	straight(DIR_FORWARD, 45, 1400);
 	servo[sGrabber] = GRABBER_UNBLOCK_IR;
 	dispenseMomentum();
 
@@ -60,7 +59,7 @@ task main()
 		if (ac3 <= 5) { // guess
 			// position 3
 
-			straight(45, 800); // guess
+			straight(DIR_FORWARD, 45, 800); // guess
 			dispenseMomentum();
 
 			rotate(45, 1000);
@@ -80,7 +79,7 @@ task main()
 
 		liftSlide(LIFT_MAX);
 
-		straight(25, 120);
+		straight(DIR_FORWARD, 25, 120);
 		dispenseMomentum();
 	}
 
@@ -90,7 +89,7 @@ task main()
 	servo[sTongue] = TONGUE_MAX;
 
 	// Back away from the goal
-	straight(-45, 400);
+	straight(DIR_BACKWARD, 45, 400);
 	dispenseMomentum();
 
 	// Lower the slide
@@ -102,8 +101,7 @@ task main()
 	dispenseMomentum();
 
 	// Ram into the bar to knock it down
-	straight(45, 400);
-	straight(100, 1200);
+	straight(DIR_FORWARD, 100, 1600);
 	dispenseMomentum();
 
 	/*
