@@ -2,8 +2,8 @@ const int LIFT_MIN = 0;
 const int LIFT_MAX = 7700;
 const int LIFT_SLOW = 2100;
 
-const int TONGUE_MIN = 115;
-const int TONGUE_MAX = 210;
+const int TONGUE_MIN = 110;
+const int TONGUE_MAX = 235;
 
 const int LIFT_THRESHOLD = 50;
 const int LIFT_CUSHION = 3000;
@@ -12,6 +12,9 @@ const int LIFT_TALL_GOAL = 5700;
 
 const int SERVO_IR_FORWARD = 115;
 const int SERVO_IR_EDGE = 160;
+
+const int GRABBER_MIN = 10;
+const int GRABBER_MAX = 220;
 
 // Direction representing a mLeft (counter-clockwise) turn
 // This is used as a parameter for turning functions.
