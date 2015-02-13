@@ -1,14 +1,12 @@
 #pragma config(Hubs,  S1, HTMotor,  HTServo,  HTMotor,  HTMotor)
 #pragma config(Hubs,  S2, HTMotor,  none,     none,     none)
-#pragma config(Sensor, S1,     ,               sensorI2CMuxController)
-#pragma config(Sensor, S2,     ,               sensorI2CMuxController)
 #pragma config(Sensor, S3,     sensIR,         sensorI2CCustom)
-#pragma config(Motor,  mtr_S1_C1_1,     mBackLeft,     tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C1_2,     mFrontLeft,    tmotorTetrix, openLoop, reversed, encoder)
+#pragma config(Motor,  mtr_S1_C1_1,     mFrontLeft,    tmotorTetrix, openLoop, reversed, encoder)
+#pragma config(Motor,  mtr_S1_C1_2,     mBackLeft,     tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C3_1,     mIntake,       tmotorTetrix, openLoop, encoder)
 #pragma config(Motor,  mtr_S1_C3_2,     mLiftR,        tmotorTetrix, openLoop, encoder)
-#pragma config(Motor,  mtr_S1_C4_1,     mFrontRight,   tmotorTetrix, openLoop, encoder)
-#pragma config(Motor,  mtr_S1_C4_2,     mBackRight,    tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C4_1,     mBackRight,    tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C4_2,     mFrontRight,   tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S2_C1_1,     mKnocker,      tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S2_C1_2,     mLiftL,        tmotorTetrix, openLoop, reversed)
 #pragma config(Servo,  srvo_S1_C2_1,    sFloodGate,           tServoContinuousRotation)
@@ -25,29 +23,26 @@
 
 task main()
 {
-	servo[sIR] = SERVO_IR_EDGE;
+	int pos = SERVO_IR_FORWARD;
 
-	waitForStartWithDelay();
+	bDisplayDiagnostics = false;
+	eraseDisplay();
 
-	straight(45, 1400);
-	dispenseMomentum();
+	while (true) {
+		servo[sIR] = pos;
+		nxtDisplayTextLine(3, "S: %03d", pos);
 
-	int ac1, ac2, ac3, ac4, ac5;
-	HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
+		wait10Msec(50);
 
-	if (ac3 <= 5) {
-		// position 2 or 3
+		int ac1, ac2, ac3, ac4, ac5;
+		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
 
-		servo[sIR] = SERVO_IR_FORWARD;
+		if (ac3 <= 5) {
+			break;
+		}
 
-		strafe(-45, 800);
-		dispenseMomentum();
-	} else {
-		// position 1
+		pos += 5;
 	}
 
-	/*
-	rotate(-45, 1000); // perf right-angle turn
-	dispenseMomentum();
-	*/
+	while (true) {}
 }

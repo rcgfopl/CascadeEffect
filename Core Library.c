@@ -10,6 +10,9 @@ const int LIFT_CUSHION = 3000;
 
 const int LIFT_TALL_GOAL = 5700;
 
+const int SERVO_IR_FORWARD = 115;
+const int SERVO_IR_EDGE = 160;
+
 // Direction representing a mLeft (counter-clockwise) turn
 // This is used as a parameter for turning functions.
 #define TURN_LEFT 1
@@ -131,10 +134,10 @@ void waitForStartWithDelay()
 */
 void yolodrive(int left, int right, int strafe, int rotation)
 {
-	int pFL = left - strafe + rotation;
-	int pBL = left + strafe + rotation;
-	int pFR = right + strafe - rotation;
-	int pBR = right - strafe - rotation;
+	int pFL = left + strafe + rotation;
+	int pBL = left - strafe + rotation;
+	int pFR = right - strafe - rotation;
+	int pBR = right + strafe - rotation;
 
 	float biggest = abs(pFL);
 	if (abs(pBL) > biggest) biggest = abs(pBL);
@@ -150,6 +153,73 @@ void yolodrive(int left, int right, int strafe, int rotation)
 	motor[mBackLeft] = (int) (scale * pBL);
 	motor[mFrontRight] = (int) (scale * pFR);
 	motor[mBackRight] = (int) (scale * pBR);
+}
+
+/**
+ * Move straight using yolodrive for the given encoder distance
+ *
+ * Pass a negative power to go backwards.
+ */
+void straight(int power, int distance)
+{
+	nMotorEncoder[mFrontLeft] = 0;
+	nMotorEncoder[mFrontRight] = 0;
+
+	yolodrive(power, power, 0, 0);
+
+	while (abs(nMotorEncoder[mFrontLeft] + nMotorEncoder[mFrontRight]) / 2 < distance) {
+		wait1Msec(1);
+	}
+
+	yolodrive(0, 0, 0, 0);
+}
+
+/**
+ * Strafe using yolodrive for the given encoder distance
+ *
+ * Pass a negative power to move left.
+ */
+void strafe(int power, int distance)
+{
+	nMotorEncoder[mFrontLeft] = 0;
+	nMotorEncoder[mFrontRight] = 0;
+
+	yolodrive(0, 0, power, 0);
+
+	while (abs(nMotorEncoder[mFrontLeft] - nMotorEncoder[mFrontRight]) / 2 < distance) {
+		wait1Msec(1);
+	}
+
+	yolodrive(0, 0, 0, 0);
+}
+
+/**
+ * Rotate using yolodrive for the given encoder distance
+ *
+ * Pass a negative power to rotate counterclockwise.
+ */
+void rotate(int power, int distance)
+{
+	nMotorEncoder[mFrontLeft] = 0;
+	nMotorEncoder[mFrontRight] = 0;
+
+	yolodrive(0, 0, 0, power);
+
+	while (abs(nMotorEncoder[mFrontLeft] - nMotorEncoder[mFrontRight]) / 2 < distance) {
+		wait1Msec(1);
+	}
+
+	yolodrive(0, 0, 0, 0);
+}
+
+/**
+ * Wait for enough time to lose momentum
+ *
+ * This is used in autonomous programs to ensure constistent and precise movements.
+ */
+void dispenseMomentum()
+{
+	wait10Msec(30);
 }
 
 /*

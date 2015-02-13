@@ -25,29 +25,36 @@
 
 task main()
 {
-	servo[sIR] = SERVO_IR_EDGE;
+	bDisplayDiagnostics = false;
+	eraseDisplay();
 
-	waitForStartWithDelay();
+	while (nNxtButtonPressed != -1) {}
+	while (nNxtButtonPressed == -1) {}
 
-	straight(45, 1400);
-	dispenseMomentum();
+	nxtDisplayTextLine(3, "FL");
+	motor[mFrontLeft] = 45;
 
-	int ac1, ac2, ac3, ac4, ac5;
-	HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
+	while (nNxtButtonPressed != -1) {}
+	while (nNxtButtonPressed == -1) {}
 
-	if (ac3 <= 5) {
-		// position 2 or 3
+	motor[mFrontLeft] = 0;
+	nxtDisplayTextLine(3, "FR");
+	motor[mFrontRight] = 45;
 
-		servo[sIR] = SERVO_IR_FORWARD;
+	while (nNxtButtonPressed != -1) {}
+	while (nNxtButtonPressed == -1) {}
 
-		strafe(-45, 800);
-		dispenseMomentum();
-	} else {
-		// position 1
-	}
+	motor[mFrontRight] = 0;
+	nxtDisplayTextLine(3, "BL");
+	motor[mBackLeft] = 45;
 
-	/*
-	rotate(-45, 1000); // perf right-angle turn
-	dispenseMomentum();
-	*/
+	while (nNxtButtonPressed != -1) {}
+	while (nNxtButtonPressed == -1) {}
+
+	motor[mBackLeft] = 0;
+	nxtDisplayTextLine(3, "BR");
+	motor[mBackRight] = 45;
+
+	while (nNxtButtonPressed != -1) {}
+	while (nNxtButtonPressed == -1) {}
 }
