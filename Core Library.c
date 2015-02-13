@@ -1,6 +1,6 @@
 const int LIFT_MIN = 0;
 const int LIFT_MAX = 7700;
-const int LIFT_SLOW = 2100;
+const int LIFT_SLOW = 400;
 
 const int TONGUE_MIN = 110;
 const int TONGUE_MAX = 235;
@@ -12,10 +12,14 @@ const int LIFT_TALL_GOAL = 5700;
 
 const int SERVO_IR_FORWARD = 115;
 const int SERVO_IR_EDGE_1 = 160;
-const int SERVO_IR_EDGE_23 = /* TODO */;
+const int SERVO_IR_EDGE_23 = /* TODO */0;
 
+// Grabber is up
 const int GRABBER_MIN = 10;
+// Grabber is down
 const int GRABBER_MAX = 220;
+// Position at which the grabber won't be in the IR sensor's line of sight
+const int GRABBER_UNBLOCK_IR = 80;
 
 // Direction representing a mLeft (counter-clockwise) turn
 // This is used as a parameter for turning functions.
@@ -126,6 +130,20 @@ void waitForStartWithDelay()
 }
 
 /*
+ * Initialization
+ */
+
+/**
+ * Set all servos to their initial, compact positions
+ */
+void homeServos()
+{
+	servo[sGrabber] = GRABBER_MIN;
+	servo[sTongue] = TONGUE_MAX;
+	servo[sIR] = SERVO_IR_FORWARD;
+}
+
+/*
  * Omnidrive locomotion
  */
 
@@ -223,12 +241,33 @@ void rotate(int power, int distance)
  */
 void dispenseMomentum()
 {
-	wait10Msec(30);
+	wait10Msec(75);
 }
 
 /*
  * Slide
  */
+
+/**
+ * Remove slack from the slide by gentling moving the pulley until resistance
+ * from the slide stops the motor
+ */
+void tenseSlide()
+{
+	int prevPos = nMotorEncoder[mLiftR];
+
+	motor[mLiftL] = motor[mLiftR] = 10;
+
+	wait10Msec(50);
+
+	while (nMotorEncoder[mLiftR] - prevPos > 10) {
+		prevPos = nMotorEncoder[mLiftR];
+
+		wait10Msec(25);
+	}
+
+	motor[mLiftL] = motor[mLiftR] = 0;
+}
 
 // Lift or lower the slide to the given encoder target
 //
@@ -238,16 +277,22 @@ void dispenseMomentum()
 // The slide will be parked within LIFT_THRESHOLD of the given target.
 void liftSlide(int target)
 {
+	int prevIR = servo[sIR];
+	if (prevIR > SERVO_IR_FORWARD) {
+		servo[sIR] = SERVO_IR_FORWARD;
+		wait10Msec(10);
+	}
+
   while (true) {
-    int distance = target - nMotorEncoder[mLiftL];
+    int distance = target - nMotorEncoder[mLiftR];
     if (abs(distance) <= LIFT_THRESHOLD) break;
 
     int power = 0;
     if (distance > 0) {
       power = 100;
     } else if (distance < 0) {
-      if (nMotorEncoder[mLiftL] <= LIFT_SLOW) {
-        power = -5;
+      if (nMotorEncoder[mLiftR] <= LIFT_SLOW) {
+        power = -10;
       } else {
         power = -20;
       }
@@ -257,6 +302,8 @@ void liftSlide(int target)
   }
 
   motor[mLiftL] = motor[mLiftR] = 0;
+
+  servo[sIR] = prevIR;
 }
 
 // Lift the slide above zero so that it has a couple inches of room above the ground
