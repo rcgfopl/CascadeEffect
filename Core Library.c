@@ -38,14 +38,11 @@ const int JOY_THRESHOLD = 60;
 #define DIR_FORWARD 1
 #define DIR_BACKWARD -1
 
-// The rate at which the robot should power up, in the form %power over milliseconds
-const float POWER_RATE = 100.0 / 2000;
+#define DIR_RIGHT 1
+#define DIR_LEFT -1
 
-// The encoder distance from the end of a movement at which the robot should enter the slow zone
-const int DIST_FOR_SLOW = 600;
-
-// The maximum power at which the motors should move when the robot is in the slow zone
-const int SLOW_POWER = 20;
+#define DIR_CLOCKWISE 1
+#define DIR_COUNTERCLOCKWISE -1
 
 /*
  * Input
@@ -212,6 +209,15 @@ int driveEncoderAverage()
  */
 void straight(int direction, int power, int distance)
 {
+	// The rate at which the robot should power up, in the form %power over milliseconds
+	const float POWER_RATE = 100.0 / 2000;
+
+	// The encoder distance from the end of a movement at which the robot should enter the slow zone
+	const int DIST_FOR_SLOW = 600;
+
+	// The maximum power at which the motors should move when the robot is in the slow zone
+	const int SLOW_POWER = 20;
+
 	nMotorEncoder[mFrontLeft] = 0;
 	nMotorEncoder[mFrontRight] = 0;
 
@@ -246,17 +252,46 @@ void straight(int direction, int power, int distance)
 /**
  * Strafe using yolodrive for the given encoder distance
  *
- * Pass a negative power to move left.
+ * Power must be positive.
+ * Direction must be either DIR_RIGHT or DIR_LEFT.
  */
-void strafe(int power, int distance)
+void strafe(int direction, int power, int distance)
 {
+	// The rate at which the robot should power up, in the form %power over milliseconds
+	const float POWER_RATE = 100.0 / 2000;
+
+	// The encoder distance from the end of a movement at which the robot should enter the slow zone
+	const int DIST_FOR_SLOW = 400;
+
+	// The maximum power at which the motors should move when the robot is in the slow zone
+	const int SLOW_POWER = 40;
+
 	nMotorEncoder[mFrontLeft] = 0;
 	nMotorEncoder[mFrontRight] = 0;
 
-	yolodrive(0, 0, power, 0);
+	long startTime = nPgmTime;
+	int timeToFull = (int) (power / POWER_RATE);
 
-	while (abs(nMotorEncoder[mFrontLeft] - nMotorEncoder[mFrontRight]) / 2 < distance) {
-		wait1Msec(1);
+	while (true) {
+		int elapsedTime = nPgmTime - startTime;
+		int remainingDist = distance - driveEncoderAverage();
+
+		if (remainingDist <= 0) break;
+
+		int currentPower;
+		if (elapsedTime < timeToFull) {
+			currentPower = (int) (elapsedTime * POWER_RATE);
+		} else {
+			currentPower = power;
+		}
+		if (remainingDist <= DIST_FOR_SLOW && currentPower > SLOW_POWER) {
+			currentPower = SLOW_POWER;
+		}
+
+		currentPower *= direction;
+		yolodrive(0, 0, currentPower, 0);
+
+		wait10Msec(1);
 	}
 
 	yolodrive(0, 0, 0, 0);
@@ -265,17 +300,46 @@ void strafe(int power, int distance)
 /**
  * Rotate using yolodrive for the given encoder distance
  *
- * Pass a negative power to rotate counterclockwise.
+ * Power must be positive.
+ * Direction must be either DIR_CLOCKWISE or DIR_COUNTERCLOCKWISE.
  */
-void rotate(int power, int distance)
+void rotate(int direction, int power, int distance)
 {
+	// The rate at which the robot should power up, in the form %power over milliseconds
+	const float POWER_RATE = 100.0 / 2000;
+
+	// The encoder distance from the end of a movement at which the robot should enter the slow zone
+	const int DIST_FOR_SLOW = 400;
+
+	// The maximum power at which the motors should move when the robot is in the slow zone
+	const int SLOW_POWER = 40;
+
 	nMotorEncoder[mFrontLeft] = 0;
 	nMotorEncoder[mFrontRight] = 0;
 
-	yolodrive(0, 0, 0, power);
+	long startTime = nPgmTime;
+	int timeToFull = (int) (power / POWER_RATE);
 
-	while (abs(nMotorEncoder[mFrontLeft] - nMotorEncoder[mFrontRight]) / 2 < distance) {
-		wait1Msec(1);
+	while (true) {
+		int elapsedTime = nPgmTime - startTime;
+		int remainingDist = distance - driveEncoderAverage();
+
+		if (remainingDist <= 0) break;
+
+		int currentPower;
+		if (elapsedTime < timeToFull) {
+			currentPower = (int) (elapsedTime * POWER_RATE);
+		} else {
+			currentPower = power;
+		}
+		if (remainingDist <= DIST_FOR_SLOW && currentPower > SLOW_POWER) {
+			currentPower = SLOW_POWER;
+		}
+
+		currentPower *= direction;
+		yolodrive(0, 0, 0, currentPower);
+
+		wait10Msec(1);
 	}
 
 	yolodrive(0, 0, 0, 0);

@@ -47,7 +47,7 @@ task main()
 
 		servo[sIR] = SERVO_IR_EDGE_23;
 
-		strafe(-45, 800); // guess
+		strafe(DIR_LEFT, 45, 800); // guess
 		dispenseMomentum();
 
 		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
@@ -62,12 +62,12 @@ task main()
 			straight(DIR_FORWARD, 45, 800); // guess
 			dispenseMomentum();
 
-			rotate(45, 1000);
+			rotate(DIR_CLOCKWISE, 45, 1000);
 			dispenseMomentum();
 		} else {
 			// position 2
 
-			rotate(45, 500);
+			rotate(DIR_CLOCKWISE, 45, 500);
 			dispenseMomentum();
 
 			// guess drive forward?
@@ -97,15 +97,15 @@ task main()
 	tenseSlide();
 
 	// Strafe to the right, line up with the bar
-	strafe(45, 900);
+	strafe(DIR_RIGHT, 45, 900);
 	dispenseMomentum();
 
 	// Ram into the bar to knock it down
-	straight(DIR_FORWARD, 100, 1600);
+	straight(DIR_FORWARD, 100, 2400);
 	dispenseMomentum();
 
 	/*
-	rotate(-45, 1000); // perf right-angle turn
+	rotate(DIR_COUNTERCLOCKWISE, 45, 1000); // perf right-angle turn
 	dispenseMomentum();
 	*/
 }
