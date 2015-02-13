@@ -11,7 +11,8 @@ const int LIFT_CUSHION = 3000;
 const int LIFT_TALL_GOAL = 5700;
 
 const int SERVO_IR_FORWARD = 115;
-const int SERVO_IR_EDGE = 160;
+const int SERVO_IR_EDGE_1 = 160;
+const int SERVO_IR_EDGE_23 = /* TODO */;
 
 const int GRABBER_MIN = 10;
 const int GRABBER_MAX = 220;
