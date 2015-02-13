@@ -2,7 +2,7 @@ const int LIFT_MIN = 0;
 const int LIFT_MAX = 7700;
 const int LIFT_SLOW = 400;
 
-const int TONGUE_MIN = 110;
+const int TONGUE_MIN = 95;
 const int TONGUE_MAX = 235;
 
 const int LIFT_THRESHOLD = 50;
@@ -12,7 +12,7 @@ const int LIFT_TALL_GOAL = 5700;
 
 const int SERVO_IR_FORWARD = 115;
 const int SERVO_IR_EDGE_1 = 160;
-const int SERVO_IR_EDGE_23 = /* TODO */0;
+const int SERVO_IR_EDGE_23 = 210;
 
 // Grabber is up
 const int GRABBER_MIN = 10;

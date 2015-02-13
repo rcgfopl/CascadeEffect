@@ -41,36 +41,52 @@ task main()
 
 	int ac1, ac2, ac3, ac4, ac5;
 	HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
+	servo[sGrabber] = GRABBER_MIN;
 
 	if (ac3 <= 5) {
 		// position 2 or 3
 
 		servo[sIR] = SERVO_IR_EDGE_23;
 
-		strafe(DIR_LEFT, 45, 800); // guess
+		strafe(DIR_LEFT, 45, 1200);
 		dispenseMomentum();
 
+		servo[sGrabber] = GRABBER_UNBLOCK_IR;
+		wait10Msec(50);
+
 		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
-
 		servo[sGrabber] = GRABBER_MIN;
+		servo[sIR] = SERVO_IR_FORWARD;
 
-		return;
-
-		if (ac3 <= 5) { // guess
+		if (ac3 <= 5) {
 			// position 3
 
-			straight(DIR_FORWARD, 45, 800); // guess
+			strafe(DIR_LEFT, 45, 300);
 			dispenseMomentum();
 
-			rotate(DIR_CLOCKWISE, 45, 1000);
+			straight(DIR_FORWARD, 45, 1100);
+			dispenseMomentum();
+
+			rotate(DIR_CLOCKWISE, 45, 850);
+			dispenseMomentum();
+
+			liftSlide(LIFT_MAX);
+
+			straight(DIR_FORWARD, 25, 100);
 			dispenseMomentum();
 		} else {
 			// position 2
 
-			rotate(DIR_CLOCKWISE, 45, 500);
+			straight(DIR_FORWARD, 45, 300);
 			dispenseMomentum();
 
-			// guess drive forward?
+			rotate(DIR_CLOCKWISE, 45, 450);
+			dispenseMomentum();
+
+			liftSlide(LIFT_MAX);
+
+			straight(DIR_FORWARD, 25, 130);
+			dispenseMomentum();
 		}
 	} else {
 		// position 1
@@ -89,7 +105,7 @@ task main()
 	servo[sTongue] = TONGUE_MAX;
 
 	// Back away from the goal
-	straight(DIR_BACKWARD, 45, 400);
+	straight(DIR_BACKWARD, 45, 500);
 	dispenseMomentum();
 
 	// Lower the slide
@@ -97,7 +113,7 @@ task main()
 	tenseSlide();
 
 	// Strafe to the right, line up with the bar
-	strafe(DIR_RIGHT, 45, 900);
+	strafe(DIR_RIGHT, 45, 680);
 	dispenseMomentum();
 
 	// Ram into the bar to knock it down
