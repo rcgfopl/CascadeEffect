@@ -25,10 +25,11 @@
 
 task main()
 {
-	servo[sIR] = SERVO_IR_EDGE;
+	servo[sIR] = SERVO_IR_EDGE_1;
 
 	waitForStartWithDelay();
 
+	// Drive away from starting position along wall
 	straight(45, 1400);
 	dispenseMomentum();
 
@@ -38,13 +39,55 @@ task main()
 	if (ac3 <= 5) {
 		// position 2 or 3
 
-		servo[sIR] = SERVO_IR_FORWARD;
+		servo[sIR] = SERVO_IR_EDGE_23;
 
-		strafe(-45, 800);
+		strafe(-45, 800); // guess
 		dispenseMomentum();
+		
+		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
+		
+		if (ac3 <= 5) { // guess
+			// position 3
+			
+			straight(45, 800); // guess
+			dispenseMomentum();
+			
+			rotate(45, 1000);
+			dispenseMomentum();
+		} else {
+			// position 2
+			
+			rotate(45, 500);
+			dispenseMomentum();
+			
+			// guess drive forward?
+		}
 	} else {
 		// position 1
+		
+		liftSlide(LIFT_MAX);
+		
+		straight(25, 400); // guess
+		dispenseMomentum();
 	}
+	
+	// Dispense the ball
+	servo[sTongue] = TONGUE_MIN;
+	wait10Msec(200);
+	servo[sTongue] = TONGUE_MAX;
+	
+	// Back away from the goal
+	straight(-45, 400); // guess
+	dispenseMomentum();
+	
+	// Strafe to the right, line up with the bar
+	strafe(45, 800); // guess
+	dispenseMomentum();
+	
+	// Ram into the bar to knock it down
+	straight(45, 400); // guess
+	straight(100, 800); // guess
+	dispenseMomentum();
 
 	/*
 	rotate(-45, 1000); // perf right-angle turn
