@@ -77,16 +77,20 @@ task main()
 		} else {
 			// position 2
 
-			straight(DIR_FORWARD, 45, 300);
+			//straight(DIR_FORWARD, 45, 300);
+		  straight(DIR_FORWARD, 45, 200);
 			dispenseMomentum();
 
 			rotate(DIR_CLOCKWISE, 45, 450);
 			dispenseMomentum();
 
+			//straight(DIR_BACKWARD, 45, 140); // guess
+			//dispenseMomentum();
+
 			liftSlide(LIFT_MAX);
 
-			straight(DIR_FORWARD, 25, 130);
-			dispenseMomentum();
+			//straight(DIR_FORWARD, 25, 130);
+			//dispenseMomentum();
 		}
 	} else {
 		// position 1
@@ -105,8 +109,8 @@ task main()
 	servo[sTongue] = TONGUE_MAX;
 
 	// Back away from the goal
-	straight(DIR_BACKWARD, 45, 500);
-	dispenseMomentum();
+	//straight(DIR_BACKWARD, 45, 500);
+	//dispenseMomentum();
 
 	// Lower the slide
 	liftSlide(LIFT_MIN);
