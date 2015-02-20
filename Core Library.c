@@ -14,6 +14,9 @@ const int SERVO_IR_FORWARD = 115;
 const int SERVO_IR_EDGE_1 = 160;
 const int SERVO_IR_EDGE_23 = 210;
 
+// The distance the ultrasonic should see when we want to dispense the autonomous ball
+const int US_DISPENSE_DISTANCE = 26;
+
 // Direction representing a mLeft (counter-clockwise) turn
 // This is used as a parameter for turning functions.
 #define TURN_LEFT 1
@@ -435,4 +438,26 @@ void raiseTongue()
 void lowerTongue()
 {
   servo[sTongue] = TONGUE_MIN;
+}
+
+/*
+ * Autonomous line-up
+ */
+
+// Move forward or backward so that we are at the appropriate distance according to the ultrasonic
+void lineupDistance()
+{
+	int distance = SensorValue[sensUS] - US_DISPENSE_DISTANCE;
+
+	while (distance != 0) {
+		int direction = (distance > 0) ? 1 : -1;
+		int power = (abs(distance) > 15) ? 40 : 20;
+
+		yolodrive(power * direction, power * direction, 0, 0);
+
+		wait10Msec(1);
+		distance = SensorValue[sensUS] - US_DISPENSE_DISTANCE;
+	}
+
+	yolodrive(0, 0, 0, 0);
 }
