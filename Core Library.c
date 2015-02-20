@@ -1,5 +1,5 @@
 const int LIFT_MIN = 0;
-const int LIFT_MAX = 7700;
+const int LIFT_MAX = 3800;
 const int LIFT_SLOW = 400;
 
 const int TONGUE_MIN = 105;
