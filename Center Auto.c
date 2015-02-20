@@ -85,7 +85,10 @@ task main()
 			dispenseMomentum();
 
 			//straight(DIR_BACKWARD, 45, 140); // guess
-			//dispenseMomentum();
+			//dispenseMomentum()
+
+			strafe(DIR_RIGHT, 45, 80);
+			dispenseMomentum();
 
 			liftSlide(LIFT_MAX);
 
