@@ -363,7 +363,7 @@ void tenseSlide()
 {
 	int prevPos = nMotorEncoder[mLiftR];
 
-	motor[mLiftL] = motor[mLiftR] = 10;
+	motor[mLiftL] = motor[mLiftR] = 15;
 
 	wait10Msec(50);
 
