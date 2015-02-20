@@ -2,8 +2,8 @@ const int LIFT_MIN = 0;
 const int LIFT_MAX = 7700;
 const int LIFT_SLOW = 400;
 
-const int TONGUE_MIN = 95;
-const int TONGUE_MAX = 235;
+const int TONGUE_MIN = 105;
+const int TONGUE_MAX = 210;
 
 const int LIFT_THRESHOLD = 50;
 const int LIFT_CUSHION = 3000;
