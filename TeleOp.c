@@ -26,6 +26,8 @@ int intakeDir = 0;
 
 bool frontIsBack = false;
 
+bool driveActive, liftActive;
+
 void drive()
 {
 	if (joy1Btn(11)) { // left joystick clicker
@@ -41,9 +43,11 @@ void drive()
 
 	if (abs(strafe) >= 99) {
 		left = right = 0;
-		} else {
+	} else {
 		strafe = 0;
 	}
+
+	driveActive = left != 0 || right != 0 || strafe != 0 || rotation != 0;
 
 	if (!joy1Btn(6)) { // left top shoulder
 		left /= 4;
@@ -63,24 +67,30 @@ void lift()
 {
 	int power = threshold(joystick.joy2_y1);
 
-	if (joy2Btn(11)) { // press left joystick
-		nMotorEncoder[mLiftR] = 0;
-		} else {
-		// Go slower when going down
-		if (power < 0) {
-			power = power * 40 / 100;
+	if (!driveActive) {
+		if (joy2Btn(11)) { // press left joystick
+			nMotorEncoder[mLiftR] = 0;
+			} else {
+			// Go slower when going down
+			if (power < 0) {
+				power = power * 40 / 100;
+			}
+
+			bool tooLow = power < 0 && nMotorEncoder[mLiftR] <= LIFT_MIN;
+			bool tooHigh = power > 0 && nMotorEncoder[mLiftR] >= LIFT_MAX;
+			if (tooLow || tooHigh) {
+				power = 0;
+			}
 		}
 
-		bool tooLow = power < 0 && nMotorEncoder[mLiftR] <= LIFT_MIN;
-		bool tooHigh = power > 0 && nMotorEncoder[mLiftR] >= LIFT_MAX;
-		if (tooLow || tooHigh) {
-			power = 0;
+		if (joy2Btn(5)) { // left top shoulder
+			power /= 3;
 		}
+	} else {
+		power = 0;
 	}
 
-	if (joy2Btn(5)) { // left top shoulder
-		power /= 3;
-	}
+	liftActive = power != 0;
 
 	motor[mLiftL] = motor[mLiftR] = power;
 }
@@ -106,7 +116,11 @@ void intake()
 		intakeDir = 0;
 	}
 
-	motor[mIntake] = intakeDir * 100;
+	if (!driveActive && !liftActive) {
+		motor[mIntake] = intakeDir * 100;
+	} else {
+		motor[mIntake] = 0;
+	}
 }
 
 void tongue()
