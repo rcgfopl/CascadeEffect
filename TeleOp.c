@@ -27,6 +27,7 @@ int intakeDir = 0;
 bool frontIsBack = false;
 
 bool driveActive, liftActive;
+bool liftIsGrounded;
 
 void drive()
 {
@@ -87,6 +88,7 @@ void lift()
 	}
 
 	liftActive = power != 0;
+	liftIsGrounded = nMotorEncoder[mLiftR] <= LIFT_MIN;
 
 	motor[mLiftL] = motor[mLiftR] = power;
 }
@@ -112,7 +114,7 @@ void intake()
 		intakeDir = 0;
 	}
 
-	if (!driveActive || !liftActive) {
+	if (liftIsGrounded && (!driveActive || !liftActive)) {
 		motor[mIntake] = intakeDir * 100;
 	} else {
 		motor[mIntake] = 0;
