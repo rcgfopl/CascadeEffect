@@ -209,10 +209,10 @@ void straight(int direction, int power, int distance)
 	const float POWER_RATE = 100.0 / 2000;
 
 	// The encoder distance from the end of a movement at which the robot should enter the slow zone
-	const int DIST_FOR_SLOW = 600;
+	const int DIST_FOR_SLOW = 400;
 
 	// The maximum power at which the motors should move when the robot is in the slow zone
-	const int SLOW_POWER = 20;
+	const int SLOW_POWER = 30;
 
 	nMotorEncoder[mFrontLeft] = 0;
 	nMotorEncoder[mFrontRight] = 0;
@@ -257,10 +257,10 @@ void strafe(int direction, int power, int distance)
 	const float POWER_RATE = 100.0 / 2000;
 
 	// The encoder distance from the end of a movement at which the robot should enter the slow zone
-	const int DIST_FOR_SLOW = 400;
+	const int DIST_FOR_SLOW = 200;
 
 	// The maximum power at which the motors should move when the robot is in the slow zone
-	const int SLOW_POWER = 40;
+	const int SLOW_POWER = 55;
 
 	nMotorEncoder[mFrontLeft] = 0;
 	nMotorEncoder[mFrontRight] = 0;
@@ -305,7 +305,7 @@ void rotate(int direction, int power, int distance)
 	const float POWER_RATE = 100.0 / 2000;
 
 	// The encoder distance from the end of a movement at which the robot should enter the slow zone
-	const int DIST_FOR_SLOW = 600;
+	const int DIST_FOR_SLOW = 400;
 
 	// The maximum power at which the motors should move when the robot is in the slow zone
 	const int SLOW_POWER = 40;
