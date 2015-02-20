@@ -93,12 +93,15 @@ task main()
 		// position 1
 	}
 
+	// Get close enough
 	lineupDistance();
 	dispenseMomentum();
 
+	// Center onto the goal
 	lineupLeftRight();
 	dispenseMomentum();
 
+	// Raise the slide
 	liftSlide(LIFT_MAX);
 
 	// Dispense the ball
@@ -111,7 +114,7 @@ task main()
 	tenseSlide();
 
 	// Strafe to the right, line up with the bar
-	strafe(DIR_RIGHT, 60, 400);
+	strafe(DIR_RIGHT, 60, 525);
 	dispenseMomentum();
 
 	// Ram into the bar to knock it down
