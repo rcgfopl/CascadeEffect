@@ -33,7 +33,7 @@ task main()
 	waitForStartWithDelay();
 
 	// Drive away from starting position along wall
-	straight(DIR_FORWARD, 45, 1400);
+	straight(DIR_FORWARD, 60, 800);
 	dispenseMomentum();
 
 	int ac1, ac2, ac3, ac4, ac5;
@@ -44,7 +44,7 @@ task main()
 
 		servo[sIR] = SERVO_IR_EDGE_23;
 
-		strafe(DIR_LEFT, 45, 1200);
+		strafe(DIR_LEFT, 60, 1200);
 		dispenseMomentum();
 
 		wait10Msec(50);
@@ -55,13 +55,13 @@ task main()
 		if (ac3 <= 5) {
 			// position 3
 
-			strafe(DIR_LEFT, 45, 300);
+			strafe(DIR_LEFT, 60, 300);
 			dispenseMomentum();
 
-			straight(DIR_FORWARD, 45, 1100);
+			straight(DIR_FORWARD, 60, 1100);
 			dispenseMomentum();
 
-			rotate(DIR_CLOCKWISE, 45, 850);
+			rotate(DIR_CLOCKWISE, 60, 850);
 			dispenseMomentum();
 
 			liftSlide(LIFT_MAX);
@@ -71,17 +71,17 @@ task main()
 		} else {
 			// position 2
 
-			//straight(DIR_FORWARD, 45, 300);
-		  straight(DIR_FORWARD, 45, 200);
+			//straight(DIR_FORWARD, 60, 300);
+			straight(DIR_FORWARD, 60, 200);
 			dispenseMomentum();
 
-			rotate(DIR_CLOCKWISE, 45, 450);
+			rotate(DIR_CLOCKWISE, 60, 450);
 			dispenseMomentum();
 
-			//straight(DIR_BACKWARD, 45, 140); // guess
+			//straight(DIR_BACKWARD, 60, 140); // guess
 			//dispenseMomentum()
 
-			strafe(DIR_RIGHT, 45, 80);
+			strafe(DIR_RIGHT, 60, 80);
 			dispenseMomentum();
 
 			liftSlide(LIFT_MAX);
@@ -91,28 +91,27 @@ task main()
 		}
 	} else {
 		// position 1
-
-		liftSlide(LIFT_MAX);
-
-		straight(DIR_FORWARD, 25, 120);
-		dispenseMomentum();
 	}
+
+	lineupDistance();
+	dispenseMomentum();
+
+	lineupLeftRight();
+	dispenseMomentum();
+
+	liftSlide(LIFT_MAX);
 
 	// Dispense the ball
 	servo[sTongue] = TONGUE_MIN;
 	wait10Msec(200);
 	servo[sTongue] = TONGUE_MAX;
 
-	// Back away from the goal
-	//straight(DIR_BACKWARD, 45, 500);
-	//dispenseMomentum();
-
 	// Lower the slide
 	liftSlide(LIFT_MIN);
 	tenseSlide();
 
 	// Strafe to the right, line up with the bar
-	strafe(DIR_RIGHT, 45, 680);
+	strafe(DIR_RIGHT, 60, 400);
 	dispenseMomentum();
 
 	// Ram into the bar to knock it down

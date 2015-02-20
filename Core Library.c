@@ -13,9 +13,13 @@ const int LIFT_TALL_GOAL = 5700;
 const int SERVO_IR_FORWARD = 115;
 const int SERVO_IR_EDGE_1 = 160;
 const int SERVO_IR_EDGE_23 = 210;
+const int SERVO_IR_EDGE_LINEUP_LEFT = 190;
 
 // The distance the ultrasonic should see when we want to dispense the autonomous ball
-const int US_DISPENSE_DISTANCE = 26;
+const int US_DISPENSE_DISTANCE = 22;
+
+// The tolerance when lining up with the ultrasonic
+const int US_DISPENSE_TOLERANCE = 1;
 
 // Direction representing a mLeft (counter-clockwise) turn
 // This is used as a parameter for turning functions.
@@ -449,15 +453,49 @@ void lineupDistance()
 {
 	int distance = SensorValue[sensUS] - US_DISPENSE_DISTANCE;
 
-	while (distance != 0) {
-		int direction = (distance > 0) ? 1 : -1;
-		int power = (abs(distance) > 15) ? 40 : 20;
+	for (int i = 0; i < 2; ++i) {
+		yolodrive(20, 20, 0, 0);
+		while (distance > US_DISPENSE_TOLERANCE) {
+			wait10Msec(1);
+			distance = SensorValue[sensUS] - US_DISPENSE_DISTANCE;
+		}
 
-		yolodrive(power * direction, power * direction, 0, 0);
-
-		wait10Msec(1);
-		distance = SensorValue[sensUS] - US_DISPENSE_DISTANCE;
+		yolodrive(-20, -20, 0, 0);
+		while (distance < -US_DISPENSE_TOLERANCE) {
+			wait10Msec(1);
+			distance = SensorValue[sensUS] - US_DISPENSE_DISTANCE;
+		}
 	}
 
 	yolodrive(0, 0, 0, 0);
+}
+
+// Move left or right so that we are lined up according to the IR
+void lineupLeftRight()
+{
+	servo[sIR] = SERVO_IR_EDGE_LINEUP_LEFT;
+	wait10Msec(25);
+
+	int ac1, ac2, ac3, ac4, ac5;
+	HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
+
+	yolodrive(0, 0, 50, 0);
+
+	while (ac2 <= 5) {
+		wait10Msec(1);
+		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
+	}
+
+	yolodrive(0, 0, 0, 0);
+	dispenseMomentum();
+
+	yolodrive(0, 0, -50, 0);
+
+	while (ac3 <= 5) {
+		wait10Msec(1);
+		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
+	}
+
+	yolodrive(0, 0, 0, 0);
+	servo[sIR] = SERVO_IR_FORWARD;
 }
