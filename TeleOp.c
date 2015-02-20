@@ -50,10 +50,10 @@ void drive()
 	driveActive = left != 0 || right != 0 || strafe != 0 || rotation != 0;
 
 	if (!joy1Btn(6)) { // left top shoulder
-		left /= 4;
-		right /= 4;
+		left /= 3;
+		right /= 3;
 		strafe /= 2;
-		rotation /= 4;
+		rotation /= 3;
 	}
 
 	if (!frontIsBack) {
