@@ -45,7 +45,7 @@ void drive()
 		strafe = 0;
 	}
 
-	if (joy1Btn(6)) { // left top shoulder
+	if (!joy1Btn(6)) { // left top shoulder
 		left /= 4;
 		right /= 4;
 		strafe /= 2;
