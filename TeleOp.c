@@ -156,9 +156,9 @@ task main()
 	nMotorEncoder[mLiftR] = 0;
 
 	while(true) {
-		if (!bDisconnected) {
-			getJoystickSettings(joystick);
+		getJoystickSettings(joystick);
 
+		if (!bDisconnected) {
 			drive();
 			lift();
 			intake();
@@ -167,7 +167,7 @@ task main()
 			floodgate();
 			tongue();
 			goalGrabber();
-			} else {
+		} else {
 			motor[mFrontLeft] = motor[mBackLeft] = motor[mFrontRight] = motor[mBackRight] = motor[mLiftL] =
 			motor[mLiftR] = motor[mIntake] = motor[mKnocker] = 0;
 		}
