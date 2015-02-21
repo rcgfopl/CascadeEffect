@@ -55,39 +55,25 @@ task main()
 		if (ac3 <= 5) {
 			// position 3
 
-			strafe(DIR_LEFT, 60, 300);
+			strafe(DIR_LEFT, 60, 200);
 			dispenseMomentum();
 
-			straight(DIR_FORWARD, 60, 1100);
-			dispenseMomentum();
-
-			rotate(DIR_CLOCKWISE, 60, 850);
-			dispenseMomentum();
-
-			liftSlide(LIFT_MAX);
-
-			straight(DIR_FORWARD, 25, 100);
-			dispenseMomentum();
-		} else {
-			// position 2
-
-			//straight(DIR_FORWARD, 60, 300);
-			straight(DIR_FORWARD, 60, 200);
+			straight(DIR_FORWARD, 60, 750);
 			dispenseMomentum();
 
 			rotate(DIR_CLOCKWISE, 60, 450);
 			dispenseMomentum();
+		} else {
+			// position 2
 
-			//straight(DIR_BACKWARD, 60, 140); // guess
-			//dispenseMomentum()
-
-			strafe(DIR_RIGHT, 60, 80);
+			straight(DIR_FORWARD, 60, 80);
 			dispenseMomentum();
 
-			liftSlide(LIFT_MAX);
+			rotate(DIR_CLOCKWISE, 60, 130);
+			dispenseMomentum();
 
-			//straight(DIR_FORWARD, 25, 130);
-			//dispenseMomentum();
+			strafe(DIR_RIGHT, 60, 50);
+			dispenseMomentum();
 		}
 	} else {
 		// position 1
@@ -114,7 +100,7 @@ task main()
 	tenseSlide();
 
 	// Strafe to the right, line up with the bar
-	strafe(DIR_RIGHT, 60, 525);
+	strafe(DIR_RIGHT, 60, 550);
 	dispenseMomentum();
 
 	// Ram into the bar to knock it down
