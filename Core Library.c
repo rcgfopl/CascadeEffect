@@ -481,7 +481,7 @@ void lineupLeftRight()
 
 	yolodrive(0, 0, 50, 0);
 
-	while (ac2 <= 5) {
+	while (ac2 <= 5 && ac1 <= 5) {
 		wait10Msec(1);
 		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
 	}
@@ -491,7 +491,7 @@ void lineupLeftRight()
 
 	yolodrive(0, 0, -50, 0);
 
-	while (ac3 <= 5) {
+	while (ac3 <= 5 && ac4 <= 5 && ac5 <= 5) {
 		wait10Msec(1);
 		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
 	}
