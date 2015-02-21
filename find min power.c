@@ -24,28 +24,38 @@
 
 task main()
 {
-	int pos = SERVO_IR_FORWARD + 100;
+	const int MIN_DISTANCE = 25;
+	const int POWER_INCREMENT = 5;
+
+	int power = 0;
 
 	bDisplayDiagnostics = false;
 	eraseDisplay();
 
-	homeServos();
+	nMotorEncoder[mFrontLeft] = nMotorEncoder[mFrontRight] = 0;
+
+	int previousEncoder = 0;
 
 	while (true) {
-		servo[sIR] = pos;
-		nxtDisplayTextLine(3, "S: %03d", pos);
+		nxtDisplayTextLine(3, "Power: %2d", power);
 
-		wait10Msec(50);
+		yolodrive(power, power, 0, 0);
 
-		int ac1, ac2, ac3, ac4, ac5;
-		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
+		wait10Msec(25);
 
-		if (ac4 > 5 && ac3 <= 5) {
+		int distance = driveEncoderAverage() - previousEncoder;
+
+		if (distance < MIN_DISTANCE) {
+			power += POWER_INCREMENT;
+		} else {
 			break;
 		}
-
-		pos -= 5;
 	}
 
-	while (true) {}
+	yolodrive(0, 0, 0, 0);
+	nxtDisplayTextLine(4, "Done.");
+
+	while (nNxtButtonPressed != -1) {}
+	while (nNxtButtonPressed == -1) {}
+	while (nNxtButtonPressed != -1) {}
 }
