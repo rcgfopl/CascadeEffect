@@ -90,6 +90,9 @@ task main()
 	// Raise the slide
 	liftSlide(LIFT_MAX);
 
+	// Keep the lift from sliding
+	motor[mLiftR] = motor[mLiftL] = 15;
+
 	// Dispense the ball
 	servo[sTongue] = TONGUE_MIN;
 	wait10Msec(200);
