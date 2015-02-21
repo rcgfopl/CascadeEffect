@@ -14,6 +14,7 @@ const int SERVO_IR_FORWARD = 115;
 const int SERVO_IR_EDGE_1 = 160;
 const int SERVO_IR_EDGE_23 = 210;
 const int SERVO_IR_EDGE_LINEUP_LEFT = 190;
+const int SERVO_IR_EDGE_LINEUP_RIGHT = 155;
 
 // The distance the ultrasonic should see when we want to dispense the autonomous ball
 const int US_DISPENSE_DISTANCE = 22;
@@ -241,6 +242,32 @@ void straight(int direction, int power, int distance)
 		}
 
 		currentPower *= direction;
+		yolodrive(currentPower, currentPower, 0, 0);
+
+		wait10Msec(1);
+	}
+
+	yolodrive(0, 0, 0, 0);
+}
+
+/**
+ * Move straight without ramping using yolodrive for the given encoder distance
+ *
+ * Power must be positive.
+ * Direction must be either DIR_FORWARD or DIR_BACKWARD.
+ */
+void jerk(int direction, int power, int distance)
+{
+	nMotorEncoder[mFrontLeft] = 0;
+	nMotorEncoder[mFrontRight] = 0;
+
+	while (true) {
+		int remainingDist = distance - driveEncoderAverage();
+
+		if (remainingDist <= 0) break;
+
+		int currentPower = power * direction;
+
 		yolodrive(currentPower, currentPower, 0, 0);
 
 		wait10Msec(1);
@@ -487,6 +514,7 @@ void lineupLeftRight()
 	}
 
 	yolodrive(0, 0, 0, 0);
+	servo[sIR] = SERVO_IR_EDGE_LINEUP_RIGHT;
 	dispenseMomentum();
 
 	yolodrive(0, 0, -50, 0);

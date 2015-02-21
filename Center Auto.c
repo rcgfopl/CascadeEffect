@@ -44,7 +44,7 @@ task main()
 
 		servo[sIR] = SERVO_IR_EDGE_23;
 
-		strafe(DIR_LEFT, 60, 1200);
+		strafe(DIR_LEFT, 60, 900);
 		dispenseMomentum();
 
 		wait10Msec(50);
@@ -55,24 +55,29 @@ task main()
 		if (ac3 <= 5) {
 			// position 3
 
+		  // Run away
+
+		  straight(DIR_BACKWARD, 60, 1500);
+		  dispenseMomentum();
+		  return;
+
+			/*
 			strafe(DIR_LEFT, 60, 200);
 			dispenseMomentum();
 
-			straight(DIR_FORWARD, 60, 750);
+			straight(DIR_FORWARD, 60, 500);
 			dispenseMomentum();
 
-			rotate(DIR_CLOCKWISE, 60, 450);
+			rotate(DIR_CLOCKWISE, 60, 250);
 			dispenseMomentum();
+			*/
 		} else {
 			// position 2
 
-			straight(DIR_FORWARD, 60, 80);
+			straight(DIR_FORWARD, 60, 120);
 			dispenseMomentum();
 
-			rotate(DIR_CLOCKWISE, 60, 130);
-			dispenseMomentum();
-
-			strafe(DIR_RIGHT, 60, 50);
+			rotate(DIR_CLOCKWISE, 60, 300);
 			dispenseMomentum();
 		}
 	} else {
@@ -95,8 +100,15 @@ task main()
 
 	// Dispense the ball
 	servo[sTongue] = TONGUE_MIN;
-	wait10Msec(200);
+	wait10Msec(150);
+
+	// Jostle the ball out
+	jerk(DIR_FORWARD, 60, 50);
+	wait10Msec(20);
+	jerk(DIR_BACKWARD, 60, 50);
+
 	servo[sTongue] = TONGUE_MAX;
+	dispenseMomentum();
 
 	// Lower the slide
 	liftSlide(LIFT_MIN);
