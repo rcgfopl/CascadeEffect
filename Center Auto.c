@@ -115,7 +115,7 @@ task main()
 	tenseSlide();
 
 	// Strafe to the right, line up with the bar
-	strafe(DIR_RIGHT, 60, 550);
+	strafe(DIR_RIGHT, 60, 460);
 	dispenseMomentum();
 
 	// Ram into the bar to knock it down
