@@ -66,14 +66,14 @@ void drive()
 
 void lift()
 {
-	int power = threshold(joystick.joy2_y1);
+	int power = threshold(joystick.joy2_y1) * 3 / 4;
 
 	if (joy2Btn(11)) { // press left joystick
 		nMotorEncoder[mLiftR] = 0;
-		} else {
+	} else {
 		// Go slower when going down
 		if (power < 0) {
-			power = power * 40 / 100;
+			power = power * 4 / 10;
 		}
 
 		bool tooLow = power < 0 && nMotorEncoder[mLiftR] <= LIFT_MIN;
@@ -146,6 +146,7 @@ void floodgate()
 	if(joy1Btn(7)){
 		servo[sFloodGate] = 5;
 	}
+
 	else if(joy1Btn(5)){
 		servo[sFloodGate] = 250;
 	}
@@ -157,6 +158,7 @@ void floodgate()
 task main()
 {
 	nMotorEncoder[mLiftR] = 0;
+	homeServos();
 
 	while(true) {
 		getJoystickSettings(joystick);
