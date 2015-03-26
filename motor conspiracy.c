@@ -1,13 +1,15 @@
 #pragma config(Hubs,  S1, HTMotor,  HTServo,  HTMotor,  HTMotor)
 #pragma config(Hubs,  S2, HTMotor,  none,     none,     none)
+#pragma config(Sensor, S1,     ,               sensorI2CMuxController)
+#pragma config(Sensor, S2,     ,               sensorI2CMuxController)
 #pragma config(Sensor, S3,     sMUX,           sensorI2CCustom)
 #pragma config(Sensor, S4,     sensUS,         sensorSONAR)
-#pragma config(Motor,  mtr_S1_C1_1,     mBackLeft,     tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C1_1,     mBackLeft,     tmotorTetrix, openLoop, reversed, encoder)
 #pragma config(Motor,  mtr_S1_C1_2,     mFrontLeft,    tmotorTetrix, openLoop, reversed, encoder)
 #pragma config(Motor,  mtr_S1_C3_1,     mIntake,       tmotorTetrix, openLoop, encoder)
 #pragma config(Motor,  mtr_S1_C3_2,     mLiftR,        tmotorTetrix, openLoop, encoder)
 #pragma config(Motor,  mtr_S1_C4_1,     mFrontRight,   tmotorTetrix, openLoop, encoder)
-#pragma config(Motor,  mtr_S1_C4_2,     mBackRight,    tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C4_2,     mBackRight,    tmotorTetrix, openLoop, encoder)
 #pragma config(Motor,  mtr_S2_C1_1,     mKnocker,      tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S2_C1_2,     mLiftL,        tmotorTetrix, openLoop, reversed)
 #pragma config(Servo,  srvo_S1_C2_1,    sFloodGate,           tServoContinuousRotation)
@@ -27,52 +29,19 @@ const tMUXSensor sensIR = msensor_S3_1;
 
 task main()
 {
+	nMotorEncoder[mBackLeft] = nMotorEncoder[mFrontRight] = 0;
+
+	yolodrive(60, 60, 0, 0);
+
+	while (driveEncoderAverage() < 300) { wait10Msec(1); }
+
+	yolodrive(0, 0, 0, 0);
+	dispenseMomentum();
+
 	bDisplayDiagnostics = false;
 	eraseDisplay();
 
-	homeServos();
-
-	nxtDisplayTextLine(1, "Left or right?");
-
-	while (nNxtButtonPressed != -1) {}
-	while (nNxtButtonPressed == -1) {}
-
-	bool fromLeft = nNxtButtonPressed == kLeftButton;
-
-	while (nNxtButtonPressed != -1) {}
-
-	int pos;
-	if (fromLeft) {
-		pos = SERVO_IR_FORWARD - 60;
-	} else {
-		pos = SERVO_IR_FORWARD + 100;
-	}
-
-	while (true) {
-		servo[sIR] = pos;
-		nxtDisplayTextLine(3, "S: %03d", pos);
-
-		wait10Msec(50);
-
-		int ac1, ac2, ac3, ac4, ac5;
-		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
-
-		nxtDisplayTextLine(4, "%02d %02d %02d %02d %02d", ac1, ac2, ac3, ac4, ac5);
-
-		if (fromLeft) {
-			if (ac2 > 5 && ac3 <= 5) {
-				break;
-			}
-
-			pos += 5;
-		} else {
-			if (ac4 > 5 && ac3 <= 5) {
-				break;
-			}
-
-			pos -= 5;
-		}
-	}
+	nxtDisplayTextLine(3, "%4d:%4d", nMotorEncoder[mBackLeft], nMotorEncoder[mFrontRight]);
 
 	while (true) {}
 }

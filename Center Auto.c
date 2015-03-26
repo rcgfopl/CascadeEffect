@@ -36,7 +36,7 @@ task main()
 	waitForStartWithDelay();
 
 	// Drive away from starting position along wall
-	straight(DIR_FORWARD, 60, 800);
+	straight(DIR_FORWARD, 60, 1600);
 	dispenseMomentum();
 
 	int ac1, ac2, ac3, ac4, ac5;
@@ -47,7 +47,7 @@ task main()
 
 		servo[sIR] = SERVO_IR_EDGE_23;
 
-		strafe(DIR_LEFT, 60, 900);
+		strafe(DIR_LEFT, 60, 1800);
 		dispenseMomentum();
 
 		wait10Msec(50);
@@ -58,23 +58,26 @@ task main()
 		if (ac3 <= 5) {
 			// position 3
 
-			straight(DIR_FORWARD, 60, 500);
+			straight(DIR_FORWARD, 60, 1000);
 			dispenseMomentum();
 
-			rotate(DIR_CLOCKWISE, 60, 250);
+			rotate(DIR_CLOCKWISE, 60, 500);
 			dispenseMomentum();
 		} else {
 			// position 2
 
-			straight(DIR_FORWARD, 60, 120);
+			straight(DIR_FORWARD, 60, 240);
 			dispenseMomentum();
 
-			rotate(DIR_CLOCKWISE, 60, 300);
+			rotate(DIR_CLOCKWISE, 60, 600);
 			dispenseMomentum();
 		}
 	} else {
 		// position 1
 	}
+
+	// Rotate towards the IR
+	lineupRotate();
 
 	// Get close enough
 	lineupDistance();
@@ -95,9 +98,9 @@ task main()
 	wait10Msec(150);
 
 	// Jostle the ball out
-	jerk(DIR_FORWARD, 60, 50);
+	jerk(DIR_FORWARD, 60, 100);
 	wait10Msec(20);
-	jerk(DIR_BACKWARD, 60, 50);
+	jerk(DIR_BACKWARD, 60, 100);
 
 	servo[sTongue] = TONGUE_MAX;
 	dispenseMomentum();
@@ -107,10 +110,10 @@ task main()
 	tenseSlide();
 
 	// Strafe to the right, line up with the bar
-	strafe(DIR_RIGHT, 60, 460);
+	strafe(DIR_RIGHT, 60, 920);
 	dispenseMomentum();
 
 	// Ram into the bar to knock it down
-	straight(DIR_FORWARD, 100, 2400);
+	straight(DIR_FORWARD, 100, 4800);
 	dispenseMomentum();
 }

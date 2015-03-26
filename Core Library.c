@@ -15,9 +15,11 @@ const int SERVO_IR_EDGE_1 = 160;
 const int SERVO_IR_EDGE_23 = 210;
 const int SERVO_IR_EDGE_LINEUP_LEFT = 190;
 const int SERVO_IR_EDGE_LINEUP_RIGHT = 155;
+const int SERVO_IR_EDGE_ROTATE_CLOCKWISE = 205;
+const int SERVO_IR_EDGE_ROTATE_COUNTERCLOCKWISE = 70; // 65 80
 
 // The distance the ultrasonic should see when we want to dispense the autonomous ball
-const int US_DISPENSE_DISTANCE = 22;
+const int US_DISPENSE_DISTANCE = 24;
 
 // The tolerance when lining up with the ultrasonic
 const int US_DISPENSE_TOLERANCE = 1;
@@ -199,7 +201,14 @@ void yolodrive(int left, int right, int strafe, int rotation)
  */
 int driveEncoderAverage()
 {
-	return (abs(nMotorEncoder[mFrontLeft]) + abs(nMotorEncoder[mFrontRight])) / 2;
+	//return (abs(nMotorEncoder[mFrontLeft]) + abs(nMotorEncoder[mFrontRight])) / 2;
+
+	int left = abs(nMotorEncoder[mFrontLeft]);
+	int right = abs(nMotorEncoder[mFrontRight]);
+	if (left > right)
+		return left;
+	else
+		return right;
 }
 
 /**
@@ -526,4 +535,38 @@ void lineupLeftRight()
 
 	yolodrive(0, 0, 0, 0);
 	servo[sIR] = SERVO_IR_FORWARD;
+}
+
+// Rotate the robot until the IR is directly ahead
+void lineupRotate()
+{
+	servo[sIR] = SERVO_IR_EDGE_ROTATE_CLOCKWISE;
+	wait10Msec(25);
+
+	int ac1, ac2, ac3, ac4, ac5;
+	HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
+
+	yolodrive(0, 0, 0, 60);
+
+	while (ac3 > 5 || ac4 > 5 || ac5 > 5) {
+		wait10Msec(1);
+		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
+	}
+
+	yolodrive(0, 0, 0, 0);
+	servo[sIR] = SERVO_IR_EDGE_ROTATE_COUNTERCLOCKWISE;
+	dispenseMomentum();
+
+	HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
+
+	yolodrive(0, 0, 0, -60);
+
+	while (ac1 > 5 || ac2 > 5 || ac3 > 5) {
+		wait10Msec(1);
+		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
+	}
+
+	yolodrive(0, 0, 0, 0);
+	servo[sIR] = SERVO_IR_FORWARD;
+	dispenseMomentum();
 }
