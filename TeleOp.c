@@ -29,6 +29,9 @@ bool frontIsBack = false;
 bool driveActive, liftActive;
 bool liftIsGrounded;
 
+int ballCount = 0;
+int ballSensorPrev = 0;
+
 void drive()
 {
 	if (joy1Btn(11)) { // left joystick clicker
@@ -160,6 +163,8 @@ task main()
 	nMotorEncoder[mLiftR] = 0;
 	homeServos();
 
+	StartTask(ballCount);
+
 	while(true) {
 		getJoystickSettings(joystick);
 
@@ -177,5 +182,12 @@ task main()
 		}
 
 		wait1Msec(100);
+	}
+}
+
+task ballCount()
+{
+	while (true) {
+		SensorValue
 	}
 }
