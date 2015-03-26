@@ -285,7 +285,7 @@ void jerk(int direction, int power, int distance)
 void strafe(int direction, int power, int distance)
 {
 	// The rate at which the robot should power up, in the form %power over milliseconds
-	const float POWER_RATE = 100.0 / 2000;
+	const float POWER_RATE = 100.0 / 1; //100.0 / 2000;
 
 	// The encoder distance from the end of a movement at which the robot should enter the slow zone
 	const int DIST_FOR_SLOW = 200;
