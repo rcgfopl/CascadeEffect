@@ -76,7 +76,7 @@ void drive()
 
 void lift()
 {
-	int power = threshold(joystick.joy2_y1) * 3 / 4;
+	int power = threshold(joystick.joy2_y1) ;//* 3 / 4;
 
 	if (joy2Btn(11)) { // press left joystick
 		nMotorEncoder[mLiftR] = 0;
