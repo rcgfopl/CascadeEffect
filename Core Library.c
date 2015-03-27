@@ -501,19 +501,19 @@ void raiseFloodgate()
 // Move forward or backward so that we are at the appropriate distance according to the ultrasonic
 void lineupDistance()
 {
-	int distance = SensorValue[sensUS] - US_DISPENSE_DISTANCE;
+	int distance = USreadDist(sensUS) - US_DISPENSE_DISTANCE;
 
 	for (int i = 0; i < 2; ++i) {
 		yolodrive(20, 20, 0, 0);
 		while (distance > US_DISPENSE_TOLERANCE) {
 			wait10Msec(1);
-			distance = SensorValue[sensUS] - US_DISPENSE_DISTANCE;
+			distance = USreadDist(sensUS) - US_DISPENSE_DISTANCE;
 		}
 
 		yolodrive(-20, -20, 0, 0);
 		while (distance < -US_DISPENSE_TOLERANCE) {
 			wait10Msec(1);
-			distance = SensorValue[sensUS] - US_DISPENSE_DISTANCE;
+			distance = USreadDist(sensUS) - US_DISPENSE_DISTANCE;
 		}
 	}
 
@@ -592,7 +592,7 @@ void lineupKickstand()
 
 	yolodrive(0, 0, 100, 0);
 
-	while (SensorValue[sensUS] < 40) {
+	while (USreadDist(sensUS) < 40) {
 		wait10Msec(1);
 	}
 
