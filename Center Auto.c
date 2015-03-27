@@ -47,7 +47,7 @@ task main()
 
 		servo[sIR] = SERVO_IR_EDGE_23;
 
-		strafe(DIR_LEFT, 60, 1800);
+		strafe(DIR_LEFT, 100, 1800);
 		dispenseMomentum();
 
 		wait10Msec(50);
@@ -58,16 +58,16 @@ task main()
 		if (ac3 <= 5) {
 			// position 3
 
-			straight(DIR_FORWARD, 60, 1000);
+			nMotorEncoder[mFrontRight] = nMotorEncoder[mFrontLeft] = 0;
+			yolodrive(60, 60, -100, 0);
+			while (driveEncoderAverage() < 2600) {}
+			yolodrive(0, 0, 0, 0);
 			dispenseMomentum();
 
 			rotate(DIR_CLOCKWISE, 60, 500);
 			dispenseMomentum();
 		} else {
 			// position 2
-
-			straight(DIR_FORWARD, 60, 240);
-			dispenseMomentum();
 
 			rotate(DIR_CLOCKWISE, 60, 600);
 			dispenseMomentum();
@@ -78,6 +78,9 @@ task main()
 
 	// Rotate towards the IR
 	lineupRotate();
+
+	// Lift the floodgate so it doesn't get stuck on the ground
+	raiseFloodgate();
 
 	// Get close enough
 	lineupDistance();
@@ -94,24 +97,20 @@ task main()
 	motor[mLiftR] = motor[mLiftL] = 15;
 
 	// Dispense the ball
-	servo[sTongue] = TONGUE_MIN;
-	wait10Msec(150);
+	servo[sTongue] = TONGUE_DOWN;
+	wait10Msec(35);
 
-	// Jostle the ball out
-	jerk(DIR_FORWARD, 60, 100);
-	wait10Msec(20);
-	jerk(DIR_BACKWARD, 60, 100);
+	jerk(DIR_FORWARD, 60, 150);
+	wait10Msec(100);
 
-	servo[sTongue] = TONGUE_MAX;
+	servo[sTongue] = TONGUE_UP;
 	dispenseMomentum();
 
 	// Lower the slide
 	liftSlide(LIFT_MIN);
 	tenseSlide();
 
-	// Strafe to the right, line up with the bar
-	strafe(DIR_RIGHT, 60, 920);
-	dispenseMomentum();
+	lineupKickstand();
 
 	// Ram into the bar to knock it down
 	straight(DIR_FORWARD, 100, 4800);

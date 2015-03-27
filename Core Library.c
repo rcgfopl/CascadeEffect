@@ -2,8 +2,8 @@ const int LIFT_MIN = 0;
 const int LIFT_MAX = 5400;
 const int LIFT_SLOW = 400;
 
-const int TONGUE_MIN = 105;
-const int TONGUE_MAX = 210;
+const int TONGUE_DOWN = 90;
+const int TONGUE_UP = 210;
 
 const int LIFT_THRESHOLD = 50;
 const int LIFT_CUSHION = 3000;
@@ -17,9 +17,11 @@ const int SERVO_IR_EDGE_LINEUP_LEFT = 190;
 const int SERVO_IR_EDGE_LINEUP_RIGHT = 155;
 const int SERVO_IR_EDGE_ROTATE_CLOCKWISE = 205;
 const int SERVO_IR_EDGE_ROTATE_COUNTERCLOCKWISE = 70; // 65 80
+const int SERVO_IR_EDGE_KICKSTAND_CLOCKWISE = 120;
+const int SERVO_IR_EDGE_KICKSTAND_COUNTERCLOCKWISE = 40;
 
 // The distance the ultrasonic should see when we want to dispense the autonomous ball
-const int US_DISPENSE_DISTANCE = 24;
+const int US_DISPENSE_DISTANCE = 25;
 
 // The tolerance when lining up with the ultrasonic
 const int US_DISPENSE_TOLERANCE = 1;
@@ -155,7 +157,7 @@ void waitForStartWithDelay()
  */
 void homeServos()
 {
-	servo[sTongue] = TONGUE_MAX;
+	servo[sTongue] = TONGUE_UP;
 	servo[sIR] = SERVO_IR_FORWARD;
 }
 
@@ -471,13 +473,25 @@ void prepareSlide()
 // Raise the tongue so balls won't dispense
 void raiseTongue()
 {
-  servo[sTongue] = TONGUE_MAX;
+  servo[sTongue] = TONGUE_UP;
 }
 
 // Lower the tongue so balls will dispense
 void lowerTongue()
 {
-  servo[sTongue] = TONGUE_MIN;
+  servo[sTongue] = TONGUE_DOWN;
+}
+
+/*
+ * Floodgate
+ */
+
+// Raise the floodgate slightly to ensure it is not dragging across the ground
+void raiseFloodgate()
+{
+	servo[sFloodGate] = 250;
+	wait10Msec(50);
+	servo[sFloodGate] = 127;
 }
 
 /*
@@ -515,9 +529,9 @@ void lineupLeftRight()
 	int ac1, ac2, ac3, ac4, ac5;
 	HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
 
-	yolodrive(0, 0, 50, 0);
+	yolodrive(0, 0, 100, 0);
 
-	while (ac2 <= 5 && ac1 <= 5) {
+	while (ac2 <= 10 && ac1 <= 10) {
 		wait10Msec(1);
 		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
 	}
@@ -526,9 +540,9 @@ void lineupLeftRight()
 	servo[sIR] = SERVO_IR_EDGE_LINEUP_RIGHT;
 	dispenseMomentum();
 
-	yolodrive(0, 0, -50, 0);
+	yolodrive(0, 0, -100, 0);
 
-	while (ac3 <= 5 && ac4 <= 5 && ac5 <= 5) {
+	while (ac3 <= 10 && ac4 <= 10 && ac5 <= 10) {
 		wait10Msec(1);
 		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
 	}
@@ -548,7 +562,7 @@ void lineupRotate()
 
 	yolodrive(0, 0, 0, 60);
 
-	while (ac3 > 5 || ac4 > 5 || ac5 > 5) {
+	while (ac3 > 10 || ac4 > 10 || ac5 > 10) {
 		wait10Msec(1);
 		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
 	}
@@ -561,7 +575,7 @@ void lineupRotate()
 
 	yolodrive(0, 0, 0, -60);
 
-	while (ac1 > 5 || ac2 > 5 || ac3 > 5) {
+	while (ac1 > 10 || ac2 > 10 || ac3 > 10) {
 		wait10Msec(1);
 		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
 	}
@@ -569,4 +583,54 @@ void lineupRotate()
 	yolodrive(0, 0, 0, 0);
 	servo[sIR] = SERVO_IR_FORWARD;
 	dispenseMomentum();
+}
+
+// Strafe and rotate to lineup to hit the kickstand
+void lineupKickstand()
+{
+	// Strafe
+
+	yolodrive(0, 0, 100, 0);
+
+	while (SensorValue[sensUS] < 40) {
+		wait10Msec(1);
+	}
+
+	yolodrive(0, 0, 0, 0);
+	strafe(DIR_RIGHT, 100, 450);
+	dispenseMomentum();
+
+	// Rotate
+
+	/*
+	servo[sIR] = SERVO_IR_EDGE_KICKSTAND_CLOCKWISE;
+	wait10Msec(25);
+
+	int ac1, ac2, ac3, ac4, ac5;
+	HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
+
+	yolodrive(0, 0, 0, 60);
+
+	while (ac3 > 10 || ac4 > 10 || ac5 > 10) {
+		wait10Msec(1);
+		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
+	}
+
+	yolodrive(0, 0, 0, 0);
+	servo[sIR] = SERVO_IR_EDGE_KICKSTAND_COUNTERCLOCKWISE;
+	dispenseMomentum();
+
+	HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
+
+	yolodrive(0, 0, 0, -60);
+
+	while (ac1 > 10 || ac2 > 10 || ac3 > 10) {
+		wait10Msec(1);
+		HTIRS2readAllACStrength(sensIR, ac1, ac2, ac3, ac4, ac5);
+	}
+
+	yolodrive(0, 0, 0, 0);
+	servo[sIR] = SERVO_IR_FORWARD;
+	dispenseMomentum();
+	*/
 }
